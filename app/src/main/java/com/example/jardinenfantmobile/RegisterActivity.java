@@ -1,6 +1,7 @@
 package com.example.jardinenfantmobile;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -200,12 +201,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                                         Toast.makeText(RegisterActivity.this, "User registred successfully. Please verify your email", Toast.LENGTH_LONG).show();
 
-                                        /*//open user profile after registration
+                                        //open user profile after registration
                                         Intent intent = new Intent(RegisterActivity.this, UserProfileActivity.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK
                                                         | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
-                                        finish();*/
+                                        finish();
 
                                     } else {
                                         // Log the failure

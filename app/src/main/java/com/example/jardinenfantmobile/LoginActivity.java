@@ -115,6 +115,9 @@ public class LoginActivity extends AppCompatActivity {
                     if (firebaseUser.isEmailVerified()){
                         Toast.makeText(LoginActivity.this, "You are logged in now", Toast.LENGTH_SHORT).show();
 
+                        //start the userprofileActivity
+                        startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
+                        finish();   //close LoginActivity
                     }else {
                         firebaseUser.sendEmailVerification();
                         authProfile.signOut();
@@ -161,5 +164,19 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
 
         alertDialog.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (authProfile.getCurrentUser() != null) {
+            Toast.makeText(LoginActivity.this, "Already logged in", Toast.LENGTH_SHORT).show();
+
+            //start the userprofileActivity
+            startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
+            finish();   //close LoginActivity
+        } else {
+            Toast.makeText(LoginActivity.this, "You can login now !", Toast.LENGTH_SHORT).show();
+        }
     }
 }
