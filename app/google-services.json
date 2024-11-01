@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "212435818289",
-    "project_id": "jardinenfantmobile",
-    "storage_bucket": "jardinenfantmobile.appspot.com"
+    "project_number": "575612386222",
+    "firebase_url": "https://jardinenfant-6de33-default-rtdb.firebaseio.com",
+    "project_id": "jardinenfant-6de33",
+    "storage_bucket": "jardinenfant-6de33.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:212435818289:android:de092bd8322acdca7c8210",
+        "mobilesdk_app_id": "1:575612386222:android:c86a642e43da7847fd663f",
         "android_client_info": {
           "package_name": "com.example.jardinenfantmobile"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBeGlrr687nF1LBdomEW8XNv4dZzICseQA"
+          "current_key": "AIzaSyA_ZbLXsxj74d8MQRD9A-u0ZJI-1tyGWME"
         }
       ],
       "services": {

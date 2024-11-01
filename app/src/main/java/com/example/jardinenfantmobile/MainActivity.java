@@ -1,5 +1,7 @@
 package com.example.jardinenfantmobile;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         //Titre
         //getSupportActionBar().setTitle("Jardin Enfant");
 
-        /*//Login Activity
+        //Login Activity
         Button buttonLogin = findViewById(R.id.button_login);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
 
         //Register Activity
         Button buttonRegister = findViewById(R.id.button_register);
