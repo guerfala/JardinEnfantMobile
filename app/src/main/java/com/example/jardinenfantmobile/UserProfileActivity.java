@@ -1,6 +1,10 @@
 package com.example.jardinenfantmobile;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -9,7 +13,9 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -35,6 +41,10 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Profile");
+
         textViewWelcome = findViewById(R.id.textView_show_welcome);
         textViewFullName = findViewById(R.id.textView_show_full_name);
         textViewEmail = findViewById(R.id.textView_show_email);
@@ -49,9 +59,39 @@ public class UserProfileActivity extends AppCompatActivity {
         if (firebaseUser == null){
             Toast.makeText(UserProfileActivity.this, "Something went wrong ! User's details are not available at the moment", Toast.LENGTH_LONG).show();
         } else {
+            checkifEmailVerified(firebaseUser);
             progressBar.setVisibility(View.VISIBLE);
             showUserprofile(firebaseUser);
         }
+    }
+
+    //Users coming to UserProfileActivity after successful registration
+    private void checkifEmailVerified(FirebaseUser firebaseUser) {
+        if (!firebaseUser.isEmailVerified()){
+            showAlertDialog();
+        }
+    }
+
+    private void showAlertDialog() {
+        //setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(UserProfileActivity.this);
+        builder.setTitle("Email is not verified");
+        builder.setMessage("Please verify your email now. You can not login without email verification next time.");
+
+        builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+        //create the alertDialog
+        AlertDialog alertDialog = builder.create();
+
+        alertDialog.show();
     }
 
     private void showUserprofile(FirebaseUser firebaseUser) {
@@ -86,5 +126,56 @@ public class UserProfileActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    //creating ActionBar menu
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //inflate menu items
+        getMenuInflater().inflate(R.menu.common_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    //when any menu item is selected
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_refresh){
+            //refresh activity
+            startActivity(getIntent());
+            finish();
+
+            overridePendingTransition(0,0);
+        } /*else if (id == R.id.menu_update_profile) {
+            Intent intent = new Intent(UserProfileActivity.this, UpdateProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.menu_update_email) {
+            Intent intent = new Intent(UserProfileActivity.this, UpdateEmailActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.menu_settings) {
+            Toast.makeText(UserProfileActivity.this, "menu_settings", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.menu_change_password ) {
+            Intent intent = new Intent(UserProfileActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.menu_delete_profile) {
+            Intent intent = new Intent(UserProfileActivity.this, DeleteProfileActivity.class);
+            startActivity(intent);
+        } */else if (id == R.id.menu_logout) {
+            authProfile.signOut();
+            Toast.makeText(UserProfileActivity.this, "Logged Out", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(UserProfileActivity.this, MainActivity.class);
+
+            //clear stack to prevent user coming back to UserProfileActivity on pressing back button
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); //close userProfileActivity
+        } else {
+            Toast.makeText(UserProfileActivity.this, "Something went wrong!", Toast.LENGTH_LONG).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
