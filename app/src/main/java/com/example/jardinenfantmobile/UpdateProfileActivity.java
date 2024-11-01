@@ -273,12 +273,13 @@ public class UpdateProfileActivity extends AppCompatActivity {
         } else if (id == R.id.menu_update_email) {
             Intent intent = new Intent(UpdateProfileActivity.this, UpdateEmailActivity.class);
             startActivity(intent);
+            finish();
         } /*else if (id == R.id.menu_settings) {
             Toast.makeText(UpdateProfileActivity.this, "menu_settings", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.menu_change_password ) {
+        } */else if (id == R.id.menu_change_password ) {
             Intent intent = new Intent(UpdateProfileActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
-        } else if (id == R.id.menu_delete_profile) {
+        } /*else if (id == R.id.menu_delete_profile) {
             Intent intent = new Intent(UpdateProfileActivity.this, DeleteProfileActivity.class);
             startActivity(intent);
         } */else if (id == R.id.menu_logout) {
