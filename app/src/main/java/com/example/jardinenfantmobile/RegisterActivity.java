@@ -104,7 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String textConfirmPwd = editTextRegisterConfirmPassword.getText().toString();
                 String textGender;
 
-                //mobile number expression reguliere
+                //validate mobile number expression reguliere
                 String mobileRegex = "[234579][0-9]{7}";
                 Matcher mobileMatcher;
                 Pattern mobilePattern = Pattern.compile(mobileRegex);
