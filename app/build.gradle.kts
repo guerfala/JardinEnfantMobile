@@ -45,6 +45,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation(libs.swiperefreshlayout)
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }
 java {
     toolchain {

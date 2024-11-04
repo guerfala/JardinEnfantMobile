@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,6 +36,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private String fullName, email, dob, gender, mobile;
     private ImageView imageView;
     private FirebaseAuth authProfile;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,8 @@ public class UserProfileActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Profile");
+
+        swipeToRefresh();
 
         textViewWelcome = findViewById(R.id.textView_show_welcome);
         textViewFullName = findViewById(R.id.textView_show_full_name);
@@ -73,6 +77,27 @@ public class UserProfileActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             showUserprofile(firebaseUser);
         }
+    }
+
+    private void swipeToRefresh() {
+        //look up for the swipe container
+        swipeContainer = findViewById(R.id.swipeContainer);
+
+        //setup refresh listener which  triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //code to refresh goes here.
+                startActivity(getIntent());
+                finish();
+                overridePendingTransition(0, 0);
+                swipeContainer.setRefreshing(false);
+            }
+        });
+
+        //configure refresh colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
+                android.R.color.holo_orange_light, android.R.color.holo_red_light);
     }
 
     //Users coming to UserProfileActivity after successful registration
