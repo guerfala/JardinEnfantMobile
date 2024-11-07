@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "537876107001",
+    "project_id": "jardinenfantevent",
+    "storage_bucket": "jardinenfantevent.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537876107001:android:8346bf4c563d1e65135c28",
+        "android_client_info": {
+          "package_name": "com.example.jardinenfantmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnBzoYiF_8C7oUDQLbMGFtCZ2miZ1yiXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
