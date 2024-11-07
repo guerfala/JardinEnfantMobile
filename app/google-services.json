@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "537876107001",
+    "firebase_url": "https://jardinenfantevent-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "jardinenfantevent",
     "storage_bucket": "jardinenfantevent.firebasestorage.app"
   },
