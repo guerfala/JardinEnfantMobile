@@ -63,9 +63,24 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             holder.deleteButton.setOnClickListener(v -> {
                 DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference("events").child(event.getId());
                 eventRef.removeValue().addOnSuccessListener(aVoid -> {
-                    eventsList.remove(position);
-                    notifyItemRemoved(position);
-                    Toast.makeText(context, "Event deleted", Toast.LENGTH_SHORT).show();
+                    // Find the index of the event by matching the event ID
+                    int index = -1;
+                    for (int i = 0; i < eventsList.size(); i++) {
+                        if (eventsList.get(i).getId().equals(event.getId())) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    // If the event was found, remove it safely
+                    if (index != -1) {
+                        eventsList.remove(index);
+                        notifyItemRemoved(index);
+                        notifyItemRangeChanged(index, eventsList.size());
+                        Toast.makeText(context, "Event deleted", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Event deleted", Toast.LENGTH_SHORT).show();
+                    }
                 }).addOnFailureListener(e -> Toast.makeText(context, "Failed to delete event", Toast.LENGTH_SHORT).show());
             });
         } else {

@@ -18,11 +18,11 @@
             android:name=".UpdateEventActivity"
             android:exported="false" />
         <activity
-            android:name=".AdminEventsActivity"
+            android:name=".ClientEventsActivity"
             android:exported="false" />
         <!-- Set EventsListActivity as the main launcher activity -->
         <activity
-            android:name=".ClientEventsActivity"
+            android:name=".AdminEventsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
