@@ -15,11 +15,14 @@
         android:theme="@style/Theme.JardinEnfantMobile"
         tools:targetApi="31">
         <activity
+            android:name=".UpdateEventActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdminEventsActivity"
             android:exported="false" />
         <!-- Set EventsListActivity as the main launcher activity -->
         <activity
-            android:name=".EventsListActivity"
+            android:name=".ClientEventsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
