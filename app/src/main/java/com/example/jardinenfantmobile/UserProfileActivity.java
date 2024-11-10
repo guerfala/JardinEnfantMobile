@@ -1,5 +1,6 @@
 package com.example.jardinenfantmobile;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +40,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private FirebaseAuth authProfile;
     private SwipeRefreshLayout swipeContainer;
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +49,22 @@ public class UserProfileActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Profile");
+
+        // Set up BottomNavigationView
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.navigation_home) {
+                // Handle home navigation
+                startActivity(new Intent(UserProfileActivity.this, UserProfileActivity.class));
+                return true;
+            } else if (id == R.id.navigation_events) {
+                // Handle events navigation
+                startActivity(new Intent(UserProfileActivity.this, AdminActivity.class));
+                return true;
+            }
+            return false;
+        });
 
         swipeToRefresh();
 
