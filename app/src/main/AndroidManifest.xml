@@ -2,11 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Ajoutez les permissions ici -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,24 +12,67 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JardinEnfantMobile"
         tools:targetApi="31">
-
-        <!-- Définir android:exported sur true pour l'activité de lancement -->
         <activity
-            android:name=".Finance.activity.PaymentActivity"
+            android:name=".user.AdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.DeleteProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.UpdateEmailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.UpdateProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.UploadProfilePictureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Student.CreateStudentActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".Student.StudentsListActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".Student.StudentDetailsActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".Student.UpdateStudentActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".classes.ClassListActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".classes.AddClassActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".classes.EditClassActivity"
+            android:exported="true"/>
+
+        <activity
+            android:name=".user.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- MainActivity n'est pas une activité de lancement -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".Finance.activity.OnlinePaymentActivity" />
     </application>
 
 </manifest>
