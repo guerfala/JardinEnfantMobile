@@ -1,12 +1,12 @@
-package com.example.jardinenfantmobile.adapter;
+package com.example.jardinenfantmobile.Finance.activity.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.jardinenfantmobile.fragment.FirstFragment;
-import com.example.jardinenfantmobile.fragment.SecondFragment;
+import com.example.jardinenfantmobile.Finance.activity.fragment.FirstFragment;
+import com.example.jardinenfantmobile.Finance.activity.fragment.SecondFragment;
 
 public class TabsPagerAdapter extends FragmentStateAdapter {
 

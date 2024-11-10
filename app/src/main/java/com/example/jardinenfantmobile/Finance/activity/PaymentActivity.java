@@ -1,6 +1,5 @@
-package com.example.jardinenfantmobile.activity;
+package com.example.jardinenfantmobile.Finance.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -8,7 +7,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.model.Parent;
+import com.example.jardinenfantmobile.Finance.activity.model.Parent;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -31,7 +30,7 @@ public class PaymentActivity extends AppCompatActivity {
             String parentPhone = parentPhoneEditText.getText().toString();
             double paymentAmount = Double.parseDouble(paymentAmountEditText.getText().toString());
 
-            Parent parent = new Parent(parentName, "", "", parentPhone, "", paymentAmount);
+            Parent parent = new Parent(parentName, "", "", parentPhone, "hassenahmadi540@gmail.com", paymentAmount);
             showPaymentDialog(parent);
         });
     }

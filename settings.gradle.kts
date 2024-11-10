@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "JardinEnfantMobile"
 include(":app")
+
+

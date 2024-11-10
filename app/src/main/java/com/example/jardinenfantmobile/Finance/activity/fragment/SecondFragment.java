@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.fragment;
+package com.example.jardinenfantmobile.Finance.activity.fragment;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;

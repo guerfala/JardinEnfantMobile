@@ -1,28 +1,35 @@
-package com.example.jardinenfantmobile.model;
+package com.example.jardinenfantmobile.Finance.activity.model;
 
 import java.io.Serializable;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.ForeignKey;
+import androidx.room.ColumnInfo;
 
+@Entity(
+        tableName = "parent",
+        foreignKeys = @ForeignKey(
+                entity = Enfant.class,
+                parentColumns = "id",
+                childColumns = "enfant_id",
+                onDelete = ForeignKey.CASCADE
+        )
+)
 public class Parent implements Serializable {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String nom;
     private String prenom;
     private String adresse;
     private String telephone;
     private String email;
+
+    @ColumnInfo(name = "montant_a_payer")
     private double montantAPayer;
-    private Enfant enfant;  // Ajout de l'enfant
 
-    // Constructeur avec l'enfant
-    public Parent(String nom, String prenom, String adresse, String telephone, String email, double montantAPayer, Enfant enfant) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.adresse = adresse;
-        this.telephone = telephone;
-        this.email = email;
-        this.montantAPayer = montantAPayer;
-        this.enfant = enfant;
-    }
+    @ColumnInfo(name = "enfant_id", index = true)
+    private int enfantId;
 
-    // Constructeur sans enfant
     public Parent(String nom, String prenom, String adresse, String telephone, String email, double montantAPayer) {
         this.nom = nom;
         this.prenom = prenom;
@@ -30,10 +37,11 @@ public class Parent implements Serializable {
         this.telephone = telephone;
         this.email = email;
         this.montantAPayer = montantAPayer;
-        this.enfant = null; // Enfant est laissé null
+        this.enfantId = enfantId;
     }
 
-    // Getters et setters pour tous les champs, y compris 'enfant'
+    public int getId() { return id; }
+
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
 
@@ -52,8 +60,7 @@ public class Parent implements Serializable {
     public double getMontantAPayer() { return montantAPayer; }
     public void setMontantAPayer(double montantAPayer) { this.montantAPayer = montantAPayer; }
 
-    public Enfant getEnfant() { return enfant; }
-    public void setEnfant(Enfant enfant) { this.enfant = enfant; }
+    public int getEnfantId() { return enfantId; }
 
     @Override
     public String toString() {
@@ -64,6 +71,7 @@ public class Parent implements Serializable {
                 ", telephone='" + telephone + '\'' +
                 ", email='" + email + '\'' +
                 ", montantAPayer=" + montantAPayer +
+                ", enfantId=" + enfantId +
                 '}';
     }
 }

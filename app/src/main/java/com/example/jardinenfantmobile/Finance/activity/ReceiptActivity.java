@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.activity;
+package com.example.jardinenfantmobile.Finance.activity;
 
 import android.os.Bundle;
 import android.widget.TextView;

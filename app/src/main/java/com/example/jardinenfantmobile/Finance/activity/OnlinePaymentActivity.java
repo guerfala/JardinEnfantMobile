@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.activity;
+package com.example.jardinenfantmobile.Finance.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.model.Parent;
+import com.example.jardinenfantmobile.Finance.activity.model.Parent;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
