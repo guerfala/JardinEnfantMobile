@@ -55,6 +55,16 @@
             android:name=".student.UpdateStudentActivity"
             android:exported="true"/>
         <activity
+            android:name=".classes.ClassListActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".classes.AddClassActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".classes.EditClassActivity"
+            android:exported="true"/>
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
