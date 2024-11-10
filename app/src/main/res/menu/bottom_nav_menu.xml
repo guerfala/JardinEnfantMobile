@@ -11,7 +11,7 @@
         android:title="Events" />
     <item
         android:id="@+id/navigation_students"
-        android:icon="@drawable/ic_gender"
+        android:icon="@drawable/ic_baseline_person_24"
         android:title="Students" />
 
     <!-- Add additional menu items as needed -->

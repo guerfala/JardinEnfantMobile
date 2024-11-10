@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.Student;
+package com.example.jardinenfantmobile.student;
 
 import java.util.List;
 

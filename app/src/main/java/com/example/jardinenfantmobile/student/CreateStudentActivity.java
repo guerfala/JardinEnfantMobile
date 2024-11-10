@@ -1,6 +1,5 @@
-package com.example.jardinenfantmobile.Student;
+package com.example.jardinenfantmobile.student;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 

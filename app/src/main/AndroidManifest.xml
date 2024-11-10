@@ -43,7 +43,16 @@
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".Student.CreateStudentActivity"
+            android:name=".student.CreateStudentActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".student.StudentsListActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".student.StudentDetailsActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".student.UpdateStudentActivity"
             android:exported="true"/>
         <activity
             android:name=".MainActivity"

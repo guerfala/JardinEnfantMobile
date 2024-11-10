@@ -12,18 +12,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.jardinenfantmobile.events.ClientEventsActivity;import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.jardinenfantmobile.Student.CreateStudentActivity;
+import com.example.jardinenfantmobile.student.StudentsListActivity;
+import com.example.jardinenfantmobile.events.AdminEventsActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -61,14 +58,14 @@ public class UserProfileActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.navigation_events) {
                 // Handle events navigation
-                startActivity(new Intent(UserProfileActivity.this, AdminActivity.class));
-		return true;
-	    } else if (id == R.id.navigation_students) {
-                startActivity(new Intent(UserProfileActivity.this, CreateStudentActivity.class));               
-		 return true;
-            }
-            return false;
-        });
+                startActivity(new Intent(UserProfileActivity.this, AdminEventsActivity.class));
+            return true;
+            } else if (id == R.id.navigation_students) {
+                    startActivity(new Intent(UserProfileActivity.this, StudentsListActivity.class));
+             return true;
+                }
+                return false;
+            });
 
         swipeToRefresh();
 
