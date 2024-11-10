@@ -197,12 +197,6 @@
                     android:layout_centerHorizontal="true"
                     android:elevation="10dp"
                     android:visibility="gone"/>
-                <Button
-                    android:id="@+id/buttonAddStudent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add Student" />
-
 
             </RelativeLayout>
 
