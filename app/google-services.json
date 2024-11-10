@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "537876107001",
-    "firebase_url": "https://jardinenfantevent-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "jardinenfantevent",
-    "storage_bucket": "jardinenfantevent.firebasestorage.app"
+    "project_number": "575612386222",
+    "firebase_url": "https://jardinenfant-6de33-default-rtdb.firebaseio.com",
+    "project_id": "jardinenfant-6de33",
+    "storage_bucket": "jardinenfant-6de33.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:537876107001:android:8346bf4c563d1e65135c28",
+        "mobilesdk_app_id": "1:575612386222:android:c86a642e43da7847fd663f",
         "android_client_info": {
           "package_name": "com.example.jardinenfantmobile"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAnBzoYiF_8C7oUDQLbMGFtCZ2miZ1yiXU"
+          "current_key": "AIzaSyA_ZbLXsxj74d8MQRD9A-u0ZJI-1tyGWME"
         }
       ],
       "services": {
