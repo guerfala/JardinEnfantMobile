@@ -38,7 +38,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
         this.fullList.clear();
         this.fullList.addAll(newFullList);
     }
-
+    
     // Method to filter the student list based on a query
     public void filter(String query) {
         if (query.isEmpty()) {
@@ -47,8 +47,8 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
         } else {
             ArrayList<Student> filteredList = new ArrayList<>();
             for (Student student : fullList) {
-                if (student.getFirstName().toLowerCase().contains(query.toLowerCase()) ||
-                        student.getLastName().toLowerCase().contains(query.toLowerCase())) {
+                String fullName = (student.getFirstName() + " " + student.getLastName()).toLowerCase();
+                if (fullName.contains(query.toLowerCase())) {
                     filteredList.add(student);
                 }
             }
@@ -57,6 +57,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
         }
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
