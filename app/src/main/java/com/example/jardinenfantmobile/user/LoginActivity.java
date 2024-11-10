@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile;
+package com.example.jardinenfantmobile.user;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,14 +15,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.example.jardinenfantmobile.R;
+import com.example.jardinenfantmobile.UserProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -143,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                                         startActivity(new Intent(LoginActivity.this, AdminActivity.class));
                                     } else {
                                         // Redirect to Client Interface
-                                        startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
+                                        startActivity(new Intent(LoginActivity.this, com.example.jardinenfantmobile.UserProfileActivity.class));
                                     }
                                     finish();
                                 } else {

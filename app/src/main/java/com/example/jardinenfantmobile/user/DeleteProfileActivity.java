@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile;
+package com.example.jardinenfantmobile.user;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,15 +14,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.example.jardinenfantmobile.R;
+import com.example.jardinenfantmobile.UserProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,7 +62,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
         if (firebaseUser.equals("")){
             Toast.makeText(DeleteProfileActivity.this, "User Details are not available at the moment", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(DeleteProfileActivity.this, UserProfileActivity.class);
+            Intent intent = new Intent(DeleteProfileActivity.this, com.example.jardinenfantmobile.UserProfileActivity.class);
             startActivity(intent);
             finish();
         } else {

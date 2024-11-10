@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile;
+package com.example.jardinenfantmobile.user;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -18,16 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.jardinenfantmobile.classes.ClassListActivity;
-import com.example.jardinenfantmobile.Student.StudentsListActivity;
-import com.example.jardinenfantmobile.events.AdminEventsActivity;
-import com.example.jardinenfantmobile.user.ChangePasswordActivity;
-import com.example.jardinenfantmobile.user.DeleteProfileActivity;
-import com.example.jardinenfantmobile.user.MainActivity;
-import com.example.jardinenfantmobile.user.ReadWriteUserDetails;
-import com.example.jardinenfantmobile.user.UpdateEmailActivity;
-import com.example.jardinenfantmobile.user.UpdateProfileActivity;
-import com.example.jardinenfantmobile.user.UploadProfilePictureActivity;
+import com.example.jardinenfantmobile.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -66,17 +57,11 @@ public class UserProfileActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.navigation_events) {
                 // Handle events navigation
-                startActivity(new Intent(UserProfileActivity.this, AdminEventsActivity.class));
-            return true;
-            } else if (id == R.id.navigation_students) {
-                    startActivity(new Intent(UserProfileActivity.this, StudentsListActivity.class));
-             return true;
-            } else if (id == R.id.navigation_classes) {
-                    startActivity(new Intent(UserProfileActivity.this, ClassListActivity.class));
-             return true;
-                }
-                return false;
-            });
+                startActivity(new Intent(UserProfileActivity.this, AdminActivity.class));
+                return true;
+            }
+            return false;
+        });
 
         swipeToRefresh();
 

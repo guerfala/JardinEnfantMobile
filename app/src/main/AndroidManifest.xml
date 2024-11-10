@@ -13,34 +13,34 @@
         android:theme="@style/Theme.JardinEnfantMobile"
         tools:targetApi="31">
         <activity
-            android:name=".AdminActivity"
+            android:name=".user.AdminActivity"
             android:exported="false" />
         <activity
-            android:name=".DeleteProfileActivity"
+            android:name=".user.DeleteProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ChangePasswordActivity"
+            android:name=".user.ChangePasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".UpdateEmailActivity"
+            android:name=".user.UpdateEmailActivity"
             android:exported="false" />
         <activity
-            android:name=".UpdateProfileActivity"
+            android:name=".user.UpdateProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".UploadProfilePictureActivity"
+            android:name=".user.UploadProfilePictureActivity"
             android:exported="false" />
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name=".user.ForgotPasswordActivity"
             android:exported="false" />
         <activity
             android:name=".UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".user.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".user.RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".Student.CreateStudentActivity"
@@ -65,7 +65,7 @@
             android:exported="true"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".user.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

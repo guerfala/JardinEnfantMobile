@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile;
+package com.example.jardinenfantmobile.user;
 
 public class ReadWriteUserDetails {
     public String userUid, doB, gender, mobile, role;
