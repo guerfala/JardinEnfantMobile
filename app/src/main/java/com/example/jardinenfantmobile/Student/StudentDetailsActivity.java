@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.student;
+package com.example.jardinenfantmobile.Student;
 
 import android.content.Intent;
 import android.net.Uri;

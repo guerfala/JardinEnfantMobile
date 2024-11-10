@@ -19,7 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jardinenfantmobile.classes.ClassListActivity;
-import com.example.jardinenfantmobile.student.StudentsListActivity;
+import com.example.jardinenfantmobile.Student.StudentsListActivity;
 import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;

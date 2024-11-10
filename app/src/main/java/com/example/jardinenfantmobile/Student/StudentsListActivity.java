@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.student;
+package com.example.jardinenfantmobile.Student;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jardinenfantmobile.R;
 import com.example.jardinenfantmobile.UserProfileActivity;
+import com.example.jardinenfantmobile.classes.ClassListActivity;
+import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,10 +39,18 @@ public class StudentsListActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.navigation_home) {
+                // Handle home navigation
                 startActivity(new Intent(StudentsListActivity.this, UserProfileActivity.class));
+                return true;
+            } else if (id == R.id.navigation_events) {
+                // Handle events navigation
+                startActivity(new Intent(StudentsListActivity.this, AdminEventsActivity.class));
                 return true;
             } else if (id == R.id.navigation_students) {
                 startActivity(new Intent(StudentsListActivity.this, StudentsListActivity.class));
+                return true;
+            } else if (id == R.id.navigation_classes) {
+                startActivity(new Intent(StudentsListActivity.this, ClassListActivity.class));
                 return true;
             }
             return false;

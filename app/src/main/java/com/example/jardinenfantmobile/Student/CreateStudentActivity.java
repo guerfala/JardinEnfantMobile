@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.student;
+package com.example.jardinenfantmobile.Student;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;

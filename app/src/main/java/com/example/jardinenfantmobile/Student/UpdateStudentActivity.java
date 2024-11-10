@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile.student;
+package com.example.jardinenfantmobile.Student;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
