@@ -20,7 +20,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.UserProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -141,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                                         startActivity(new Intent(LoginActivity.this, AdminActivity.class));
                                     } else {
                                         // Redirect to Client Interface
-                                        startActivity(new Intent(LoginActivity.this, com.example.jardinenfantmobile.UserProfileActivity.class));
+                                        startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
                                     }
                                     finish();
                                 } else {

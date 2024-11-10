@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.UserProfileActivity;
+import com.example.jardinenfantmobile.user.UserProfileActivity;
 import com.example.jardinenfantmobile.classes.ClassListActivity;
 import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;

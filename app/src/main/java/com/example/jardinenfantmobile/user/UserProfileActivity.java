@@ -18,7 +18,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.jardinenfantmobile.Finance.activity.PaymentActivity;
 import com.example.jardinenfantmobile.R;
+import com.example.jardinenfantmobile.classes.ClassListActivity;
+import com.example.jardinenfantmobile.Student.StudentsListActivity;
+import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -57,11 +61,20 @@ public class UserProfileActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.navigation_events) {
                 // Handle events navigation
-                startActivity(new Intent(UserProfileActivity.this, AdminActivity.class));
-                return true;
-            }
-            return false;
-        });
+                startActivity(new Intent(UserProfileActivity.this, AdminEventsActivity.class));
+            return true;
+            } else if (id == R.id.navigation_students) {
+                    startActivity(new Intent(UserProfileActivity.this, StudentsListActivity.class));
+             return true;
+            } else if (id == R.id.navigation_classes) {
+                    startActivity(new Intent(UserProfileActivity.this, ClassListActivity.class));
+             return true;
+            } else if (id == R.id.navigation_finance) {
+                    startActivity(new Intent(UserProfileActivity.this, PaymentActivity.class));
+             return true;
+                }
+                return false;
+            });
 
         swipeToRefresh();
 

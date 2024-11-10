@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.UserProfileActivity;
+import com.example.jardinenfantmobile.user.UserProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

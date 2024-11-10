@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.UserProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -62,7 +61,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
         if (firebaseUser.equals("")){
             Toast.makeText(DeleteProfileActivity.this, "User Details are not available at the moment", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(DeleteProfileActivity.this, com.example.jardinenfantmobile.UserProfileActivity.class);
+            Intent intent = new Intent(DeleteProfileActivity.this, UserProfileActivity.class);
             startActivity(intent);
             finish();
         } else {
