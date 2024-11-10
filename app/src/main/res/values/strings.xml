@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">JardinEnfantMobile</string>
+    <string-array name="gender_options">
+        <item>Boy</item>
+        <item>Girl</item>
+    </string-array>
 </resources>

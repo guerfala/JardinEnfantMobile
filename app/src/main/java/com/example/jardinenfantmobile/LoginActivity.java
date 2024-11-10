@@ -30,6 +30,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -124,10 +127,32 @@ public class LoginActivity extends AppCompatActivity {
                     //check if email is verified
                     if (firebaseUser.isEmailVerified()){
                         Toast.makeText(LoginActivity.this, "You are logged in now", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.VISIBLE);
 
-                        //start the userprofileActivity
-                        startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
-                        finish();   //close LoginActivity
+                        // Fetch the user's role from Realtime Database
+                        String userId = firebaseUser.getUid();
+                        DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("Registered Users");
+
+                        referenceProfile.child(userId).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                if (task.isSuccessful() && task.getResult().exists()) {
+                                    String role = task.getResult().child("role").getValue(String.class);
+                                    if ("admin".equals(role)) {
+                                        // Redirect to Admin Interface
+                                        startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+                                    } else {
+                                        // Redirect to Client Interface
+                                        startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
+                                    }
+                                    finish();
+                                } else {
+                                    Log.e(TAG, "Role retrieval failed: " + task.getException().getMessage());
+                                    Toast.makeText(LoginActivity.this, "Failed to retrieve user role", Toast.LENGTH_SHORT).show();
+                                }
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        });
                     }else {
                         firebaseUser.sendEmailVerification();
                         authProfile.signOut();

@@ -12,15 +12,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.jardinenfantmobile.classes.ClassListActivity;
-import com.example.jardinenfantmobile.Student.StudentsListActivity;
-import com.example.jardinenfantmobile.events.AdminEventsActivity;
+<<<<<<< HEAD
+import com.example.jardinenfantmobile.Student.CreateStudentActivity;
+=======
+import com.example.jardinenfantmobile.events.ClientEventsActivity;
+>>>>>>> events
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,17 +65,19 @@ public class UserProfileActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.navigation_events) {
                 // Handle events navigation
-                startActivity(new Intent(UserProfileActivity.this, AdminEventsActivity.class));
-            return true;
-            } else if (id == R.id.navigation_students) {
-                    startActivity(new Intent(UserProfileActivity.this, StudentsListActivity.class));
-             return true;
-            } else if (id == R.id.navigation_classes) {
-                    startActivity(new Intent(UserProfileActivity.this, ClassListActivity.class));
-             return true;
-                }
-                return false;
-            });
+<<<<<<< HEAD
+                startActivity(new Intent(UserProfileActivity.this, AdminActivity.class));
+                return true;}
+            else if (id == R.id.navigation_students) {
+                // Handle events navigation
+                startActivity(new Intent(UserProfileActivity.this, CreateStudentActivity.class));
+=======
+                startActivity(new Intent(UserProfileActivity.this, ClientEventsActivity.class));
+>>>>>>> events
+                return true;
+            }
+            return false;
+        });
 
         swipeToRefresh();
 
