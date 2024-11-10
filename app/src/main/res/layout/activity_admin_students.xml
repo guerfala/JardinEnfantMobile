@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- RecyclerView to display the list of students -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/adminStudentsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="64dp" />
+
+    <!-- Floating Action Button to add a new student -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addStudentButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="Add Student"
+        android:src="@drawable/add"/>
+</RelativeLayout>
