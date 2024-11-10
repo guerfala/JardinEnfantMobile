@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile;
+package com.example.jardinenfantmobile.events;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.jardinenfantmobile.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

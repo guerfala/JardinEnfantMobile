@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile;
+package com.example.jardinenfantmobile.events;
 
 import java.util.HashMap;
 import java.util.Map;
