@@ -9,6 +9,10 @@
         android:id="@+id/navigation_events"
         android:icon="@drawable/ic_event"
         android:title="Events" />
+    <item
+        android:id="@+id/navigation_students"
+        android:icon="@drawable/ic_gender"
+        android:title="Students" />
 
     <!-- Add additional menu items as needed -->
 </menu>
