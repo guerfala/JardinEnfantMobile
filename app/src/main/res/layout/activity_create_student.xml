@@ -22,19 +22,33 @@
         android:id="@+id/lastNameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Last name" />
+        android:hint="Last Name" />
 
     <EditText
         android:id="@+id/birthDateInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Birth Date (YYYY-MM-DD)" />
+        android:hint="Birth Date (YYYY-MM-DD)"
+        android:focusable="false"
+        android:clickable="true" />
 
-    <EditText
-        android:id="@+id/genderInput"
+    <Spinner
+        android:id="@+id/genderSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/studentImageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_baseline_person_24" />
+
+    <Button
+        android:id="@+id/selectImageButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="gender" />
+        android:text="Select Image" />
 
     <Button
         android:id="@+id/createStudentButton"
