@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.jardinenfantmobile.events.ClientEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,7 +61,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.navigation_events) {
                 // Handle events navigation
-                startActivity(new Intent(UserProfileActivity.this, AdminActivity.class));
+                startActivity(new Intent(UserProfileActivity.this, ClientEventsActivity.class));
                 return true;
             }
             return false;

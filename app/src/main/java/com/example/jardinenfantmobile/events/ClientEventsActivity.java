@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.jardinenfantmobile.R;
+import com.example.jardinenfantmobile.UserProfileActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +30,22 @@ public class ClientEventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_events); // Use a layout specifically for client
+
+        // Set up BottomNavigationView
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.navigation_home) {
+                // Handle home navigation
+                startActivity(new Intent(ClientEventsActivity.this, UserProfileActivity.class));
+                return true;
+            } else if (id == R.id.navigation_events) {
+                // Handle events navigation
+                startActivity(new Intent(ClientEventsActivity.this, ClientEventsActivity.class));
+                return true;
+            }
+            return false;
+        });
 
         // Set up RecyclerView for displaying events
         eventsRecyclerView = findViewById(R.id.eventsRecyclerView);
