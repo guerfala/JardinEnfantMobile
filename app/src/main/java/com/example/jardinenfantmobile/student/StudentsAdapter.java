@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.jardinenfantmobile.R;
+import com.example.jardinenfantmobile.student.Student;
 
 import java.util.ArrayList;
 

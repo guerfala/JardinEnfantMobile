@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.jardinenfantmobile.classes.ClassListActivity;
 import com.example.jardinenfantmobile.student.StudentsListActivity;
 import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -62,6 +63,9 @@ public class UserProfileActivity extends AppCompatActivity {
             return true;
             } else if (id == R.id.navigation_students) {
                     startActivity(new Intent(UserProfileActivity.this, StudentsListActivity.class));
+             return true;
+            } else if (id == R.id.navigation_classes) {
+                    startActivity(new Intent(UserProfileActivity.this, ClassListActivity.class));
              return true;
                 }
                 return false;
