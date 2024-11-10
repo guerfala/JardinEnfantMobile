@@ -12,6 +12,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JardinEnfantMobile"
         tools:targetApi="31">
+
+        <!-- Définir ClassListActivity comme activité principale -->
+        <activity
+            android:name=".classes.ClassListActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Retirer le intent-filter de MainActivity, elle ne sera plus la première activité -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+
+        <!-- Les autres activités -->
+        <activity
+            android:name=".classes.AddClassActivity"
+            android:exported="true" />
+        <activity
+            android:name=".classes.EditClassActivity"
+            android:exported="true" />
         <activity
             android:name=".DeleteProfileActivity"
             android:exported="false" />
@@ -39,15 +62,7 @@
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
