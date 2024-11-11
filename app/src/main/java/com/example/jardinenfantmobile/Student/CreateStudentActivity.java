@@ -43,17 +43,19 @@ public class CreateStudentActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private EditText firstNameInput, lastNameInput, birthDateInput;
-    private Spinner genderSpinner, classSpinner;
+    private Spinner genderSpinner, classSpinner, clientSpinner;
     private ImageView studentImageView;
     private Button selectImageButton, createStudentButton;
     private Uri imageUri;
-    private DatabaseReference studentsRef, classRef;
+    private DatabaseReference studentsRef, classRef, usersRef;
     private StorageReference storageRef;
     private ProgressDialog progressDialog;
-    private ArrayAdapter<String> classAdapter;
+    private ArrayAdapter<String> classAdapter, clientAdapter;
     private List<String> classNames = new ArrayList<>();
     private List<String> classIds = new ArrayList<>();
-    private String selectedClassId;
+    private List<String> clientIds = new ArrayList<>();
+    private String selectedClassId, selectedClientId, userRole;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,7 @@ public class CreateStudentActivity extends AppCompatActivity {
         birthDateInput = findViewById(R.id.birthDateInput);
         genderSpinner = findViewById(R.id.genderSpinner);
         classSpinner = findViewById(R.id.classSpinner);
+        clientSpinner = findViewById(R.id.clientSpinner); // Spinner for selecting client
         studentImageView = findViewById(R.id.studentImageView);
         selectImageButton = findViewById(R.id.selectImageButton);
         createStudentButton = findViewById(R.id.createStudentButton);
@@ -82,6 +85,8 @@ public class CreateStudentActivity extends AppCompatActivity {
         studentsRef = FirebaseDatabase.getInstance().getReference("students");
         storageRef = FirebaseStorage.getInstance().getReference("student_images");
         classRef = FirebaseDatabase.getInstance().getReference("classes");
+        usersRef = FirebaseDatabase.getInstance().getReference("Registered Users");
+        auth = FirebaseAuth.getInstance();
 
         // Set up gender spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -95,6 +100,7 @@ public class CreateStudentActivity extends AppCompatActivity {
         classSpinner.setAdapter(classAdapter);
 
         loadClasses();
+        checkUserRole();
 
         classSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -155,6 +161,67 @@ public class CreateStudentActivity extends AppCompatActivity {
         });
     }
 
+    private void checkUserRole() {
+        String currentUserId = auth.getCurrentUser().getUid();
+        usersRef.child(currentUserId).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                userRole = snapshot.getValue(String.class);
+                if ("admin".equals(userRole)) {
+                    clientSpinner.setVisibility(View.VISIBLE); // Show client dropdown for admin
+                    loadClientIds();
+                } else {
+                    clientSpinner.setVisibility(View.GONE); // Hide client dropdown for regular users
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(CreateStudentActivity.this, "Failed to check user role", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void loadClientIds() {
+        clientIds.clear();
+        clientAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, clientIds);
+        clientAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        clientSpinner.setAdapter(clientAdapter);
+
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                clientIds.clear();
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    String role = userSnapshot.child("role").getValue(String.class);
+                    if ("client".equals(role)) {
+                        String clientId = userSnapshot.getKey();
+                        clientIds.add(clientId);
+                    }
+                }
+                clientAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(CreateStudentActivity.this, "Failed to load clients", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        clientSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedClientId = clientIds.get(position); // Selected client ID for admin
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                selectedClientId = null;
+            }
+        });
+    }
+
     private void createStudent() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null) {
@@ -164,7 +231,7 @@ public class CreateStudentActivity extends AppCompatActivity {
             return;
         }
 
-        String userId = auth.getCurrentUser().getUid(); // Get current user UID
+        String userId = "admin".equals(userRole) && selectedClientId != null ? selectedClientId : auth.getCurrentUser().getUid();
 
         String firstName = firstNameInput.getText().toString();
         String lastName = lastNameInput.getText().toString();
@@ -184,14 +251,13 @@ public class CreateStudentActivity extends AppCompatActivity {
         studentDetails.put("birthDate", birthDate);
         studentDetails.put("gender", gender);
         studentDetails.put("classId", selectedClassId);
-        studentDetails.put("parent_id", userId); // Associate student with the parent (user)
+        studentDetails.put("parent_id", userId);
 
         if (imageUri != null) {
             progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading Image...");
             progressDialog.show();
 
-            // Generate a unique filename based on the current date and time
             String fileName = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA).format(new Date());
             StorageReference fileRef = storageRef.child("images/" + fileName);
 
@@ -212,7 +278,6 @@ public class CreateStudentActivity extends AppCompatActivity {
         }
     }
 
-    // Method to save student details to Firebase Realtime Database
     private void saveStudentDetails(String studentId, Map<String, Object> studentDetails) {
         studentsRef.child(studentId).setValue(studentDetails)
                 .addOnSuccessListener(aVoid -> {
@@ -222,12 +287,11 @@ public class CreateStudentActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(CreateStudentActivity.this, "Failed to create student", Toast.LENGTH_SHORT).show());
     }
 
-    // Method to redirect to StudentsListActivity after successful creation
     private void redirectToStudentsList() {
         Intent intent = new Intent(CreateStudentActivity.this, StudentsListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish(); // Close the current activity
+        finish();
     }
 
     private void showDatePickerDialog() {

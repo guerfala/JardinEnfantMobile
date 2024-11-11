@@ -114,11 +114,12 @@ public class StudentsListActivity extends AppCompatActivity {
                     Student student = dataSnapshot.getValue(Student.class);
 
                     if (student != null) {
-                        if ("client".equals(userRole) && student.getparent_id() != null && student.getparent_id().equals(userId)) {
-                            // Admin should see all students without filtering
+                        // Admin should see all students without filtering
+                        if ("admin".equals(userRole)) {
                             studentsList.add(student);
-                        } else  {
-                            // Client sees only their related students
+                        }
+                        // Client sees only their related students
+                        else if ("client".equals(userRole) && student.getparent_id() != null && student.getparent_id().equals(userId)) {
                             studentsList.add(student);
                         }
                     }
@@ -136,6 +137,7 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }

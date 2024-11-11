@@ -43,6 +43,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp" />
 
+    <Spinner
+        android:id="@+id/clientSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/studentImageView"
         android:layout_width="150dp"
