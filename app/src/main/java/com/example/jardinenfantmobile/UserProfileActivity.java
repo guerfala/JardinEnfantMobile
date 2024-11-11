@@ -18,8 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.jardinenfantmobile.classes.ClassListActivity;
+import com.example.jardinenfantmobile.Finance.activity.PaymentActivity;
 import com.example.jardinenfantmobile.Student.StudentsListActivity;
+import com.example.jardinenfantmobile.classes.ClassListActivity;
 import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.example.jardinenfantmobile.user.ChangePasswordActivity;
 import com.example.jardinenfantmobile.user.DeleteProfileActivity;
@@ -73,6 +74,9 @@ public class UserProfileActivity extends AppCompatActivity {
              return true;
             } else if (id == R.id.navigation_classes) {
                     startActivity(new Intent(UserProfileActivity.this, ClassListActivity.class));
+             return true;
+            } else if (id == R.id.navigation_finance) {
+                    startActivity(new Intent(UserProfileActivity.this, PaymentActivity.class));
              return true;
                 }
                 return false;

@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.UserProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -57,7 +56,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         if (firebaseUser.equals("")){
             Toast.makeText(ChangePasswordActivity.this, "Something went wrong ! User's details are not available.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(ChangePasswordActivity.this, com.example.jardinenfantmobile.UserProfileActivity.class);
+            Intent intent = new Intent(ChangePasswordActivity.this, UserProfileActivity.class);
             startActivity(intent);
             finish();
         } else {

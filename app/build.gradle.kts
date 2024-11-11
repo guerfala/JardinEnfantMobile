@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation ("com.github.bumptech.glide:glide:4.14.2@aar")
     implementation(libs.firebase.storage)
+    implementation(libs.room.common)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
