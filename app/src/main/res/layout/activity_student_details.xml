@@ -34,6 +34,16 @@
         android:text="Gender"
         android:textSize="16sp" />
 
+    <TextView
+        android:id="@+id/studentClass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Class"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+
     <!-- Optional Buttons for Admin Actions -->
     <Button
         android:id="@+id/editStudentButton"

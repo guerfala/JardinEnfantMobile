@@ -8,6 +8,10 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jardinenfantmobile.R;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,5 +42,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        FirebaseApp.initializeApp(this);
+
+        // Set up Firebase App Check with Play Integrity
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+        firebaseAppCheck.installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance());
     }
 }

@@ -15,6 +15,7 @@ import com.example.jardinenfantmobile.user.UserProfileActivity;
 import com.example.jardinenfantmobile.classes.ClassListActivity;
 import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -107,6 +108,12 @@ public class StudentsListActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("StudentsListActivity", "Database error: " + error.getMessage());
             }
-        });
+            });
+            FloatingActionButton addStudentButton = findViewById(R.id.addStudentButton);
+            addStudentButton.setOnClickListener(v -> {
+                // Start the CreateStudentActivity when the button is clicked
+                Intent intent = new Intent(StudentsListActivity.this, CreateStudentActivity.class);
+                startActivity(intent);
+            });
     }
 }

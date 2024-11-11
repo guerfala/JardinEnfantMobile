@@ -17,16 +17,19 @@ import com.example.jardinenfantmobile.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHolder> {
 
     private List<ClassModel> classList;
+    private List<ClassModel> classListFull; // Liste complète pour la recherche
     private Context context;
 
     public ClassAdapter(Context context, List<ClassModel> classList) {
         this.context = context;
         this.classList = classList;
+        this.classListFull = new ArrayList<>(classList); // Copie de la liste complète
     }
 
     @NonNull
@@ -84,6 +87,23 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
     @Override
     public int getItemCount() {
         return classList.size();
+    }
+
+    // Méthode pour filtrer les résultats en fonction de la recherche
+    public void filter(String text) {
+        classList.clear();
+        if (text.isEmpty()) {
+            classList.addAll(classListFull); // Affiche tous les résultats si le champ de recherche est vide
+        } else {
+            text = text.toLowerCase();
+            for (ClassModel item : classListFull) {
+                if (item.getName().toLowerCase().contains(text) ||
+                        item.getDescription().toLowerCase().contains(text)) {
+                    classList.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     static class ClassViewHolder extends RecyclerView.ViewHolder {

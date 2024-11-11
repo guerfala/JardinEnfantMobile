@@ -37,12 +37,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <Spinner
+        android:id="@+id/classSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+
     <ImageView
         android:id="@+id/studentImageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_baseline_person_24" />
+        android:src="@drawable/default_image" />
 
     <Button
         android:id="@+id/selectImageButton"

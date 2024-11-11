@@ -12,18 +12,24 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.jardinenfantmobile.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UpdateStudentActivity extends AppCompatActivity {
@@ -31,13 +37,15 @@ public class UpdateStudentActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private EditText firstNameInput, lastNameInput, birthDateInput;
-    private Spinner genderSpinner;
+    private Spinner genderSpinner, classSpinner;
     private ImageView studentImageView;
     private Button selectImageButton, updateStudentButton;
     private Uri imageUri;
-    private DatabaseReference studentRef;
+    private DatabaseReference studentRef, classesRef;
     private StorageReference storageRef;
-    private String studentId;
+    private String studentId, selectedClassId;
+    private List<String> classNames = new ArrayList<>();
+    private List<String> classIds = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,7 @@ public class UpdateStudentActivity extends AppCompatActivity {
         lastNameInput = findViewById(R.id.lastNameInput);
         birthDateInput = findViewById(R.id.birthDateInput);
         genderSpinner = findViewById(R.id.genderSpinner);
+        classSpinner = findViewById(R.id.classSpinner);
         studentImageView = findViewById(R.id.studentImageView);
         selectImageButton = findViewById(R.id.selectImageButton);
         updateStudentButton = findViewById(R.id.updateStudentButton);
@@ -58,15 +67,20 @@ public class UpdateStudentActivity extends AppCompatActivity {
 
         // Firebase references
         studentRef = FirebaseDatabase.getInstance().getReference("students").child(studentId);
+        classesRef = FirebaseDatabase.getInstance().getReference("classes");
         storageRef = FirebaseStorage.getInstance().getReference("student_images");
 
         // Load existing student data
         loadStudentData();
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        // Set up gender spinner
+        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(this,
                 R.array.gender_options, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        genderSpinner.setAdapter(adapter);
+        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        genderSpinner.setAdapter(genderAdapter);
+
+        // Load classes into class spinner
+        loadClasses();
 
         birthDateInput.setOnClickListener(v -> showDatePickerDialog());
 
@@ -77,7 +91,6 @@ public class UpdateStudentActivity extends AppCompatActivity {
         updateStudentButton.setOnClickListener(v -> updateStudent());
     }
 
-    // Opens a file chooser for selecting an image
     private void openFileChooser() {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
@@ -88,11 +101,10 @@ public class UpdateStudentActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            studentImageView.setImageURI(imageUri);  // Display the selected image
+            studentImageView.setImageURI(imageUri);
         }
     }
 
-    // Load existing student data into input fields
     private void loadStudentData() {
         studentRef.get().addOnSuccessListener(dataSnapshot -> {
             if (dataSnapshot.exists()) {
@@ -101,6 +113,7 @@ public class UpdateStudentActivity extends AppCompatActivity {
                 String birthDate = dataSnapshot.child("birthDate").getValue(String.class);
                 String gender = dataSnapshot.child("gender").getValue(String.class);
                 String imageUrl = dataSnapshot.child("image").getValue(String.class);
+                selectedClassId = dataSnapshot.child("classId").getValue(String.class);
 
                 firstNameInput.setText(firstName);
                 lastNameInput.setText(lastName);
@@ -115,12 +128,64 @@ public class UpdateStudentActivity extends AppCompatActivity {
                 if (imageUrl != null) {
                     Glide.with(this).load(imageUrl).into(studentImageView);
                 } else {
-                    studentImageView.setImageResource(R.drawable.default_image); // Placeholder if no image
+                    studentImageView.setImageResource(R.drawable.default_image);
                 }
+
+                // Set selected class in classSpinner after loading classes
+                setSelectedClassInSpinner();
             }
         }).addOnFailureListener(e ->
                 Toast.makeText(UpdateStudentActivity.this, "Failed to load student data", Toast.LENGTH_SHORT).show());
     }
+
+    private void setSelectedClassInSpinner() {
+        classesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (int i = 0; i < classIds.size(); i++) {
+                    if (classIds.get(i).equals(selectedClassId)) {
+                        classSpinner.setSelection(i);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UpdateStudentActivity.this, "Failed to load class data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadClasses() {
+        classesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                classNames.clear();
+                classIds.clear();
+                for (DataSnapshot classSnapshot : snapshot.getChildren()) {
+                    String classId = classSnapshot.getKey();
+                    String className = classSnapshot.child("name").getValue(String.class);
+                    if (classId != null && className != null) {
+                        classIds.add(classId);
+                        classNames.add(className);
+                    }
+                }
+                ArrayAdapter<String> classAdapter = new ArrayAdapter<>(UpdateStudentActivity.this, android.R.layout.simple_spinner_item, classNames);
+                classAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                classSpinner.setAdapter(classAdapter);
+
+                // Set the selected class if it was already loaded
+                setSelectedClassInSpinner();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UpdateStudentActivity.this, "Failed to load classes", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -136,44 +201,56 @@ public class UpdateStudentActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    // Method to update the student in Firebase
     private void updateStudent() {
         String firstName = firstNameInput.getText().toString();
         String lastName = lastNameInput.getText().toString();
         String birthDate = birthDateInput.getText().toString();
         String gender = genderSpinner.getSelectedItem().toString();
+        String selectedClassName = classSpinner.getSelectedItem().toString();
+        int selectedClassIndex = classNames.indexOf(selectedClassName);
+        selectedClassId = classIds.get(selectedClassIndex);
 
-        // Validation for input fields
         if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) || TextUtils.isEmpty(birthDate) || TextUtils.isEmpty(gender)) {
             Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Map with updated fields
         Map<String, Object> updates = new HashMap<>();
         updates.put("firstName", firstName);
         updates.put("lastName", lastName);
         updates.put("birthDate", birthDate);
         updates.put("gender", gender);
+        updates.put("classId", selectedClassId);
 
         if (imageUri != null) {
-            // Upload the new image to Firebase Storage
             StorageReference fileRef = storageRef.child(studentId + ".jpg");
             fileRef.putFile(imageUri).addOnSuccessListener(taskSnapshot ->
                     fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         updates.put("image", uri.toString());
-                        // Update the student in Firebase Database
                         studentRef.updateChildren(updates)
-                                .addOnSuccessListener(aVoid -> Toast.makeText(UpdateStudentActivity.this, "Student updated successfully", Toast.LENGTH_SHORT).show())
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(UpdateStudentActivity.this, "Student updated successfully", Toast.LENGTH_SHORT).show();
+                                    redirectToStudentsList();
+                                })
                                 .addOnFailureListener(e -> Toast.makeText(UpdateStudentActivity.this, "Failed to update student", Toast.LENGTH_SHORT).show());
-                        finish();
-                    })).addOnFailureListener(e -> Toast.makeText(UpdateStudentActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show());
+                    })
+            ).addOnFailureListener(e -> Toast.makeText(UpdateStudentActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show());
         } else {
-            // Update the student without a new image
             studentRef.updateChildren(updates)
-                    .addOnSuccessListener(aVoid -> Toast.makeText(UpdateStudentActivity.this, "Student updated successfully", Toast.LENGTH_SHORT).show())
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(UpdateStudentActivity.this, "Student updated successfully", Toast.LENGTH_SHORT).show();
+                        redirectToStudentsList();
+                    })
                     .addOnFailureListener(e -> Toast.makeText(UpdateStudentActivity.this, "Failed to update student", Toast.LENGTH_SHORT).show());
-            finish();
         }
     }
+
+    // Method to redirect to StudentsListActivity after successful update
+    private void redirectToStudentsList() {
+        Intent intent = new Intent(UpdateStudentActivity.this, StudentsListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish(); // Close the current activity
+    }
+
 }
