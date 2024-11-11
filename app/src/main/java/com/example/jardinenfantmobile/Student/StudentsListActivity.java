@@ -169,20 +169,25 @@ public class StudentsListActivity extends AppCompatActivity {
         filteredList.clear();
 
         for (Student student : studentsList) {
+            // Retrieve and handle potential null values for gender and classId
             String studentGender = student.getGender() != null ? student.getGender() : "";
-            String studentClassId = student.getclassId();
+            String studentClassId = student.getclassId() != null ? student.getclassId() : "";
 
+            // Apply both filters cumulatively
             boolean matchesGender = gender.equals("All") || studentGender.equalsIgnoreCase(gender);
-            boolean matchesClass = classId.equals("All") || (studentClassId != null && studentClassId.equals(classId));
+            boolean matchesClass = classId.equals("All") || studentClassId.equals(classId);
 
+            // Only add the student if it matches both filters
             if (matchesGender && matchesClass) {
                 filteredList.add(student);
             }
         }
 
+        // Update the adapter with the filtered list
         studentsAdapter.updateFullList(filteredList);
         studentsAdapter.notifyDataSetChanged();
     }
+
 
     private void setupRecyclerView() {
         studentsRecyclerView = findViewById(R.id.studentsRecyclerView);
