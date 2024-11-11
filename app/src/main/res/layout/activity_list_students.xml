@@ -4,12 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-<!--    <Spinner-->
-<!--        android:id="@+id/classFilterSpinner"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="8dp"-->
-<!--        android:prompt="@string/class_filter_prompt" />-->
+    <Spinner
+        android:id="@+id/classFilterSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:prompt="@string/class_filter_prompt" />
 
 <!--    <Button-->
 <!--        android:id="@+id/applyFilterButton"-->

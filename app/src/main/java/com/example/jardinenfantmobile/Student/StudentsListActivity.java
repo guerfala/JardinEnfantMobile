@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.jardinenfantmobile.R;
 import com.example.jardinenfantmobile.user.UserProfileActivity;
 import com.example.jardinenfantmobile.classes.ClassListActivity;
@@ -25,18 +26,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 public class StudentsListActivity extends AppCompatActivity {
     private RecyclerView studentsRecyclerView;
     private StudentsAdapter studentsAdapter;
     private ArrayList<Student> studentsList;
-    private ArrayList<Student> filteredList; // List for gender-based filtering
-    private DatabaseReference studentsRef, usersRef;
+    private ArrayList<Student> filteredList; // List for gender and class-based filtering
+    private DatabaseReference studentsRef, usersRef, classesRef;
     private FloatingActionButton addStudentButton;
     private String userRole;
     private String userId;
-    private Spinner genderFilterSpinner;
+    private Spinner genderFilterSpinner, classFilterSpinner;
+    private ArrayList<String> classNames = new ArrayList<>();
+    private ArrayList<String> classIds = new ArrayList<>(); // To store class IDs for filtering
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,7 @@ public class StudentsListActivity extends AppCompatActivity {
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         usersRef = FirebaseDatabase.getInstance().getReference("Registered Users");
         studentsRef = FirebaseDatabase.getInstance().getReference("students");
+        classesRef = FirebaseDatabase.getInstance().getReference("classes");
 
         addStudentButton = findViewById(R.id.addStudentButton);
         addStudentButton.setOnClickListener(v -> {
@@ -56,6 +61,7 @@ public class StudentsListActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupRecyclerView();
         setupGenderFilter(); // Initialize gender filter
+        setupClassFilter(); // Initialize class filter
         fetchUserRoleAndLoadStudents();
     }
 
@@ -90,25 +96,87 @@ public class StudentsListActivity extends AppCompatActivity {
         genderFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedGender = genderFilterSpinner.getSelectedItem().toString();
-                filterByGender(selectedGender);
+                String selectedGender = genderFilterSpinner.getSelectedItem() != null
+                        ? genderFilterSpinner.getSelectedItem().toString()
+                        : "All";
+                filterByClassAndGender(classFilterSpinner.getSelectedItem() != null
+                        ? classFilterSpinner.getSelectedItem().toString()
+                        : "All", selectedGender);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                filterByGender("All"); // Default to show all if nothing is selected
+                filterByClassAndGender(classFilterSpinner.getSelectedItem() != null
+                        ? classFilterSpinner.getSelectedItem().toString()
+                        : "All", "All");
             }
         });
     }
 
+    private void setupClassFilter() {
+        classFilterSpinner = findViewById(R.id.classFilterSpinner);
 
-    private void filterByGender(String gender) {
+        // Fetch class names from Firebase
+        classesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                classNames.clear();
+                classIds.clear();
+                classNames.add("All"); // Add "All" option to show all students
+                for (DataSnapshot classSnapshot : snapshot.getChildren()) {
+                    String classId = classSnapshot.getKey();
+                    String className = classSnapshot.child("name").getValue(String.class);
+
+                    if (classId != null && className != null) {
+                        classIds.add(classId);
+                        classNames.add(className);
+                    }
+                }
+
+                // Set up the adapter with class options
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(StudentsListActivity.this,
+                        android.R.layout.simple_spinner_item, classNames);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                classFilterSpinner.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("StudentsListActivity", "Failed to load classes: " + error.getMessage());
+            }
+        });
+
+        classFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedClass = classFilterSpinner.getSelectedItem() != null
+                        ? classFilterSpinner.getSelectedItem().toString()
+                        : "All";
+                filterByClassAndGender(selectedClass, genderFilterSpinner.getSelectedItem() != null
+                        ? genderFilterSpinner.getSelectedItem().toString()
+                        : "All");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                filterByClassAndGender("All", genderFilterSpinner.getSelectedItem() != null
+                        ? genderFilterSpinner.getSelectedItem().toString()
+                        : "All");
+            }
+        });
+    }
+
+    private void filterByClassAndGender(String className, String gender) {
         filteredList.clear();
 
         for (Student student : studentsList) {
-            // Check for null in gender to avoid NullPointerException
             String studentGender = student.getGender() != null ? student.getGender() : "";
-            if (gender.equals("All") || studentGender.equalsIgnoreCase(gender)) {
+            String studentClassId = student.getclassId();
+
+            boolean matchesGender = gender.equals("All") || studentGender.equalsIgnoreCase(gender);
+            boolean matchesClass = className.equals("All") || (studentClassId != null && classIds.contains(studentClassId) && classNames.get(classIds.indexOf(studentClassId)).equals(className));
+
+            if (matchesGender && matchesClass) {
                 filteredList.add(student);
             }
         }
@@ -172,22 +240,18 @@ public class StudentsListActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Student student = dataSnapshot.getValue(Student.class);
                     if (student != null) {
-                        // Check if parent_id is null to avoid NullPointerException
                         String parentId = student.getparent_id();
-                        String gender = student.getGender();
-
-                        // Admin sees all students; client sees only their related students
-                        if ("admin".equals(userRole) ||
-                                ("client".equals(userRole) && parentId != null && parentId.equals(userId))) {
-
-                            // Safely add student to the list, assuming 'gender' can be null too
+                        if ("admin".equals(userRole) || ("client".equals(userRole) && parentId != null && parentId.equals(userId))) {
                             studentsList.add(student);
                         }
                     }
                 }
-                // Call filter function with selected item from the spinner
-                filterByGender(genderFilterSpinner.getSelectedItem() != null ?
-                        genderFilterSpinner.getSelectedItem().toString() : "All");
+
+                // Apply the combined filter after loading the students
+                filterByClassAndGender(
+                        classFilterSpinner.getSelectedItem() != null ? classFilterSpinner.getSelectedItem().toString() : "All",
+                        genderFilterSpinner.getSelectedItem() != null ? genderFilterSpinner.getSelectedItem().toString() : "All"
+                );
             }
 
             @Override
@@ -196,5 +260,4 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
-
 }
