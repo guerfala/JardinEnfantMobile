@@ -37,8 +37,9 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
     public void updateFullList(ArrayList<Student> newFullList) {
         this.fullList.clear();
         this.fullList.addAll(newFullList);
+        notifyDataSetChanged();
     }
-    
+
     // Method to filter the student list based on a query
     public void filter(String query) {
         if (query.isEmpty()) {

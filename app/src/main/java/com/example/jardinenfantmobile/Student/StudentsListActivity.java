@@ -27,7 +27,7 @@ public class StudentsListActivity extends AppCompatActivity {
     private RecyclerView studentsRecyclerView;
     private StudentsAdapter studentsAdapter;
     private ArrayList<Student> studentsList;
-    private DatabaseReference studentsRef;
+    private DatabaseReference studentsRef, usersRef;
     private FloatingActionButton addStudentButton;
     private String userRole;
     private String userId;
@@ -37,51 +37,51 @@ public class StudentsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_students);
 
-        // Retrieve the role and user ID passed from LoginActivity
-        userRole = getIntent().getStringExtra("role");
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        usersRef = FirebaseDatabase.getInstance().getReference("Registered Users");
+        studentsRef = FirebaseDatabase.getInstance().getReference("students");
 
-        // Initialize addStudentButton (visible for both roles)
         addStudentButton = findViewById(R.id.addStudentButton);
         addStudentButton.setOnClickListener(v -> {
             Intent intent = new Intent(StudentsListActivity.this, CreateStudentActivity.class);
             startActivity(intent);
         });
 
-        // Initialize BottomNavigationView for navigation
+        setupBottomNavigation();
+        setupRecyclerView();
+        fetchUserRoleAndLoadStudents();
+    }
+
+    private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            Intent intent = null;
             if (id == R.id.navigation_home) {
-                startActivity(new Intent(StudentsListActivity.this, UserProfileActivity.class));
-                return true;
+                intent = new Intent(StudentsListActivity.this, UserProfileActivity.class);
             } else if (id == R.id.navigation_events) {
-                startActivity(new Intent(StudentsListActivity.this, AdminEventsActivity.class));
-                return true;
+                intent = new Intent(StudentsListActivity.this, AdminEventsActivity.class);
             } else if (id == R.id.navigation_students) {
-                startActivity(new Intent(StudentsListActivity.this, StudentsListActivity.class));
-                return true;
+                intent = new Intent(StudentsListActivity.this, StudentsListActivity.class);
             } else if (id == R.id.navigation_classes) {
-                startActivity(new Intent(StudentsListActivity.this, ClassListActivity.class));
-                return true;
+                intent = new Intent(StudentsListActivity.this, ClassListActivity.class);
             }
-            return false;
+            if (intent != null) startActivity(intent);
+            return true;
         });
+    }
 
-        // Initialize RecyclerView for displaying students
+    private void setupRecyclerView() {
         studentsRecyclerView = findViewById(R.id.studentsRecyclerView);
         studentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         studentsList = new ArrayList<>();
         studentsAdapter = new StudentsAdapter(studentsList, student -> {
-            // Navigate to StudentDetailsActivity to view student details
             Intent intent = new Intent(StudentsListActivity.this, StudentDetailsActivity.class);
             intent.putExtra("studentId", student.getId());
             startActivity(intent);
         }, this);
         studentsRecyclerView.setAdapter(studentsAdapter);
 
-        // Initialize the SearchView for filtering
         SearchView searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -96,12 +96,25 @@ public class StudentsListActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
 
-        // Set up Firebase reference
-        studentsRef = FirebaseDatabase.getInstance().getReference("students");
+    private void fetchUserRoleAndLoadStudents() {
+        usersRef.child(userId).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                userRole = snapshot.getValue(String.class);
+                if (userRole != null) {
+                    loadStudentsBasedOnRole();
+                } else {
+                    Log.e("StudentsListActivity", "User role not found");
+                }
+            }
 
-        // Load students based on user role
-        loadStudentsBasedOnRole();
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("StudentsListActivity", "Failed to retrieve user role: " + error.getMessage());
+            }
+        });
     }
 
     private void loadStudentsBasedOnRole() {
@@ -109,25 +122,17 @@ public class StudentsListActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 studentsList.clear();
-
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Student student = dataSnapshot.getValue(Student.class);
-
                     if (student != null) {
-                        // Admin should see all students without filtering
-                        if ("admin".equals(userRole)) {
-                            studentsList.add(student);
-                        }
-                        // Client sees only their related students
-                        else if ("client".equals(userRole) && student.getparent_id() != null && student.getparent_id().equals(userId)) {
+                        if ("admin".equals(userRole) ||
+                                ("client".equals(userRole) && student.getparent_id() != null && student.getparent_id().equals(userId))) {
                             studentsList.add(student);
                         }
                     }
                 }
-                studentsAdapter.updateFullList(new ArrayList<>(studentsList)); // Update the fullList in the adapter
+                studentsAdapter.updateFullList(new ArrayList<>(studentsList));
                 studentsAdapter.notifyDataSetChanged();
-
-                // Log result to verify data loading based on role
                 Log.d("StudentsListActivity", "Loaded students: " + studentsList.size() + " for role: " + userRole);
             }
 
@@ -137,7 +142,4 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 }

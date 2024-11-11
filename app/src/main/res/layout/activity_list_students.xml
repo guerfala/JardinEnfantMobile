@@ -4,6 +4,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+<!--    <Spinner-->
+<!--        android:id="@+id/classFilterSpinner"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:prompt="@string/class_filter_prompt" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/applyFilterButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:text="Apply Filter" />-->
+
+<!--    <Spinner-->
+<!--        android:id="@+id/genderFilterSpinner"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:prompt="@string/gender_filter_prompt" />-->
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"

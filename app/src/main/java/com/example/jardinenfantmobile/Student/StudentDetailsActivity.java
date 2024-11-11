@@ -3,6 +3,7 @@ package com.example.jardinenfantmobile.Student;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.jardinenfantmobile.R;
 import com.example.jardinenfantmobile.user.ReadWriteUserDetails;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,8 +28,9 @@ public class StudentDetailsActivity extends AppCompatActivity {
     private TextView studentName, studentBirthDate, studentGender, studentClass, studentParentName;
     private ImageView studentImageView;
     private Button editStudentButton, deleteStudentButton;
-    private DatabaseReference studentRef, classesRef, databaseReference;
+    private DatabaseReference studentRef, classesRef, usersRef;
     private String studentId, classId, parentId;
+    private String currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,11 @@ public class StudentDetailsActivity extends AppCompatActivity {
         // Firebase references
         studentRef = FirebaseDatabase.getInstance().getReference("students").child(studentId);
         classesRef = FirebaseDatabase.getInstance().getReference("classes");
-        databaseReference = FirebaseDatabase.getInstance().getReference("Registered Users"); // Updated reference
+        usersRef = FirebaseDatabase.getInstance().getReference("Registered Users");
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Check user role to set button visibility
+        checkUserRole();
 
         // Load student data
         loadStudentData();
@@ -64,6 +71,29 @@ public class StudentDetailsActivity extends AppCompatActivity {
 
         // Set up delete button
         deleteStudentButton.setOnClickListener(v -> deleteStudent());
+    }
+
+    private void checkUserRole() {
+        usersRef.child(currentUserId).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String role = snapshot.getValue(String.class);
+                if ("admin".equals(role)) {
+                    // Show edit and delete buttons if the user is an admin
+                    editStudentButton.setVisibility(View.VISIBLE);
+                    deleteStudentButton.setVisibility(View.VISIBLE);
+                } else {
+                    // Hide edit and delete buttons for non-admin users
+                    editStudentButton.setVisibility(View.GONE);
+                    deleteStudentButton.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(StudentDetailsActivity.this, "Failed to check user role", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadStudentData() {
@@ -84,7 +114,7 @@ public class StudentDetailsActivity extends AppCompatActivity {
                     studentBirthDate.setText(birthDate);
                     studentGender.setText(gender);
                     loadClassName(classId);
-                    loadParentName(parentId); // Load parent name based on parent_id
+                    loadParentName(parentId);
                     if (imageUrl != null) {
                         Glide.with(StudentDetailsActivity.this).load(Uri.parse(imageUrl)).into(studentImageView);
                     } else {
@@ -109,11 +139,7 @@ public class StudentDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String className = snapshot.child("name").getValue(String.class);
-                    if (className != null) {
-                        studentClass.setText(className);
-                    } else {
-                        studentClass.setText("Class not found");
-                    }
+                    studentClass.setText(className != null ? className : "Class not found");
                 }
 
                 @Override
@@ -128,15 +154,11 @@ public class StudentDetailsActivity extends AppCompatActivity {
 
     private void loadParentName(String parentId) {
         if (parentId != null) {
-            databaseReference.child(parentId).addListenerForSingleValueEvent(new ValueEventListener() {
+            usersRef.child(parentId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String parentName = snapshot.child("name").getValue(String.class);
-                    if (parentName != null) {
-                        studentParentName.setText(parentName); // Display parent's name if available
-                    } else {
-                        studentParentName.setText("Parent ID: " + parentId); // Display parentId if name is not available
-                    }
+                    studentParentName.setText(parentName != null ? parentName : "Parent ID: " + parentId);
                 }
 
                 @Override
@@ -148,9 +170,6 @@ public class StudentDetailsActivity extends AppCompatActivity {
             studentParentName.setText("No parent assigned");
         }
     }
-
-
-
 
     private void deleteStudent() {
         new AlertDialog.Builder(this)
