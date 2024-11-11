@@ -116,13 +116,14 @@ public class StudentsListActivity extends AppCompatActivity {
     private void setupClassFilter() {
         classFilterSpinner = findViewById(R.id.classFilterSpinner);
 
-        // Fetch class names from Firebase
+        // Fetch class names and IDs from Firebase
         classesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 classNames.clear();
                 classIds.clear();
                 classNames.add("All"); // Add "All" option to show all students
+                classIds.add("All"); // Corresponding ID for "All" option
                 for (DataSnapshot classSnapshot : snapshot.getChildren()) {
                     String classId = classSnapshot.getKey();
                     String className = classSnapshot.child("name").getValue(String.class);
@@ -149,10 +150,8 @@ public class StudentsListActivity extends AppCompatActivity {
         classFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedClass = classFilterSpinner.getSelectedItem() != null
-                        ? classFilterSpinner.getSelectedItem().toString()
-                        : "All";
-                filterByClassAndGender(selectedClass, genderFilterSpinner.getSelectedItem() != null
+                String selectedClassId = classIds.get(position); // Use the class ID directly
+                filterByClassAndGender(selectedClassId, genderFilterSpinner.getSelectedItem() != null
                         ? genderFilterSpinner.getSelectedItem().toString()
                         : "All");
             }
@@ -166,7 +165,7 @@ public class StudentsListActivity extends AppCompatActivity {
         });
     }
 
-    private void filterByClassAndGender(String className, String gender) {
+    private void filterByClassAndGender(String classId, String gender) {
         filteredList.clear();
 
         for (Student student : studentsList) {
@@ -174,7 +173,7 @@ public class StudentsListActivity extends AppCompatActivity {
             String studentClassId = student.getclassId();
 
             boolean matchesGender = gender.equals("All") || studentGender.equalsIgnoreCase(gender);
-            boolean matchesClass = className.equals("All") || (studentClassId != null && classIds.contains(studentClassId) && classNames.get(classIds.indexOf(studentClassId)).equals(className));
+            boolean matchesClass = classId.equals("All") || (studentClassId != null && studentClassId.equals(classId));
 
             if (matchesGender && matchesClass) {
                 filteredList.add(student);
@@ -246,7 +245,6 @@ public class StudentsListActivity extends AppCompatActivity {
                         }
                     }
                 }
-
                 // Apply the combined filter after loading the students
                 filterByClassAndGender(
                         classFilterSpinner.getSelectedItem() != null ? classFilterSpinner.getSelectedItem().toString() : "All",
