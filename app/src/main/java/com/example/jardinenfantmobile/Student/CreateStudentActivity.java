@@ -29,7 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,14 +43,13 @@ public class CreateStudentActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private EditText firstNameInput, lastNameInput, birthDateInput;
-    private Spinner genderSpinner;
+    private Spinner genderSpinner, classSpinner;
     private ImageView studentImageView;
     private Button selectImageButton, createStudentButton;
     private Uri imageUri;
     private DatabaseReference studentsRef, classRef;
     private StorageReference storageRef;
     private ProgressDialog progressDialog;
-    private Spinner classSpinner;
     private ArrayAdapter<String> classAdapter;
     private List<String> classNames = new ArrayList<>();
     private List<String> classIds = new ArrayList<>();
@@ -110,7 +108,6 @@ public class CreateStudentActivity extends AppCompatActivity {
             }
         });
 
-
         // Set up Date Picker for birth date input
         birthDateInput.setOnClickListener(v -> showDatePickerDialog());
 
@@ -145,7 +142,6 @@ public class CreateStudentActivity extends AppCompatActivity {
                 for (DataSnapshot classSnapshot : snapshot.getChildren()) {
                     String classId = classSnapshot.getKey();
                     String className = classSnapshot.child("name").getValue(String.class);
-
                     classIds.add(classId);
                     classNames.add(className);
                 }
@@ -159,7 +155,6 @@ public class CreateStudentActivity extends AppCompatActivity {
         });
     }
 
-
     private void createStudent() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null) {
@@ -168,6 +163,8 @@ public class CreateStudentActivity extends AppCompatActivity {
             Toast.makeText(this, "Please log in to create a student", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        String userId = auth.getCurrentUser().getUid(); // Get current user UID
 
         String firstName = firstNameInput.getText().toString();
         String lastName = lastNameInput.getText().toString();
@@ -187,6 +184,7 @@ public class CreateStudentActivity extends AppCompatActivity {
         studentDetails.put("birthDate", birthDate);
         studentDetails.put("gender", gender);
         studentDetails.put("classId", selectedClassId);
+        studentDetails.put("parent_id", userId); // Associate student with the parent (user)
 
         if (imageUri != null) {
             progressDialog = new ProgressDialog(this);
@@ -210,12 +208,10 @@ public class CreateStudentActivity extends AppCompatActivity {
                         Toast.makeText(CreateStudentActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show();
                     });
         } else {
-            // Save student details without an image URL if no image is selected
             saveStudentDetails(studentId, studentDetails);
         }
     }
 
-    // Method to save student details to Firebase Realtime Database
     // Method to save student details to Firebase Realtime Database
     private void saveStudentDetails(String studentId, Map<String, Object> studentDetails) {
         studentsRef.child(studentId).setValue(studentDetails)
@@ -233,7 +229,6 @@ public class CreateStudentActivity extends AppCompatActivity {
         startActivity(intent);
         finish(); // Close the current activity
     }
-
 
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();

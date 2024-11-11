@@ -81,8 +81,11 @@ public class ClassListActivity extends AppCompatActivity {
                 classList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ClassModel classModel = snapshot.getValue(ClassModel.class);
-                    classList.add(classModel);
+                    if (classModel != null) {
+                        classList.add(classModel);
+                    }
                 }
+                classAdapter.updateFullList(new ArrayList<>(classList)); // Sync fullList in adapter
                 classAdapter.notifyDataSetChanged();
             }
 
@@ -92,4 +95,5 @@ public class ClassListActivity extends AppCompatActivity {
             }
         });
     }
+
 }

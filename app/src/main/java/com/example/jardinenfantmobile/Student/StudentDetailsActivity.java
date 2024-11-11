@@ -8,14 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jardinenfantmobile.classes.ClassModel;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.jardinenfantmobile.R;
+import com.example.jardinenfantmobile.user.ReadWriteUserDetails;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,11 +23,11 @@ import com.google.firebase.database.ValueEventListener;
 
 public class StudentDetailsActivity extends AppCompatActivity {
 
-    private TextView studentName, studentBirthDate, studentGender, studentClass;
+    private TextView studentName, studentBirthDate, studentGender, studentClass, studentParentName;
     private ImageView studentImageView;
     private Button editStudentButton, deleteStudentButton;
-    private DatabaseReference studentRef, classesRef;
-    private String studentId, classId;
+    private DatabaseReference studentRef, classesRef, databaseReference;
+    private String studentId, classId, parentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +39,7 @@ public class StudentDetailsActivity extends AppCompatActivity {
         studentBirthDate = findViewById(R.id.studentBirthDate);
         studentGender = findViewById(R.id.studentGender);
         studentClass = findViewById(R.id.studentClass);
+        studentParentName = findViewById(R.id.studentParentName);
         studentImageView = findViewById(R.id.studentImageView);
         editStudentButton = findViewById(R.id.editStudentButton);
         deleteStudentButton = findViewById(R.id.deleteStudentButton);
@@ -47,9 +47,10 @@ public class StudentDetailsActivity extends AppCompatActivity {
         // Get student ID from Intent
         studentId = getIntent().getStringExtra("studentId");
 
-        // Firebase reference for the specific student
+        // Firebase references
         studentRef = FirebaseDatabase.getInstance().getReference("students").child(studentId);
         classesRef = FirebaseDatabase.getInstance().getReference("classes");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Registered Users"); // Updated reference
 
         // Load student data
         loadStudentData();
@@ -65,7 +66,6 @@ public class StudentDetailsActivity extends AppCompatActivity {
         deleteStudentButton.setOnClickListener(v -> deleteStudent());
     }
 
-    // Method to load student data from Firebase and display it
     private void loadStudentData() {
         studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -76,6 +76,7 @@ public class StudentDetailsActivity extends AppCompatActivity {
                     String birthDate = snapshot.child("birthDate").getValue(String.class);
                     String gender = snapshot.child("gender").getValue(String.class);
                     classId = snapshot.child("classId").getValue(String.class);
+                    parentId = snapshot.child("parent_id").getValue(String.class);
                     String imageUrl = snapshot.child("imageUrl").getValue(String.class);
 
                     // Display data in TextViews and ImageView
@@ -83,10 +84,11 @@ public class StudentDetailsActivity extends AppCompatActivity {
                     studentBirthDate.setText(birthDate);
                     studentGender.setText(gender);
                     loadClassName(classId);
+                    loadParentName(parentId); // Load parent name based on parent_id
                     if (imageUrl != null) {
                         Glide.with(StudentDetailsActivity.this).load(Uri.parse(imageUrl)).into(studentImageView);
                     } else {
-                        studentImageView.setImageResource(R.drawable.default_image); // Default image placeholder
+                        studentImageView.setImageResource(R.drawable.default_image);
                     }
                 } else {
                     Toast.makeText(StudentDetailsActivity.this, "Student data not found", Toast.LENGTH_SHORT).show();
@@ -124,24 +126,44 @@ public class StudentDetailsActivity extends AppCompatActivity {
         }
     }
 
-    // Method to delete the student data from Firebase
+    private void loadParentName(String parentId) {
+        if (parentId != null) {
+            databaseReference.child(parentId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String parentName = snapshot.child("name").getValue(String.class);
+                    if (parentName != null) {
+                        studentParentName.setText(parentName); // Display parent's name if available
+                    } else {
+                        studentParentName.setText("Parent ID: " + parentId); // Display parentId if name is not available
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    studentParentName.setText("Error loading parent");
+                }
+            });
+        } else {
+            studentParentName.setText("No parent assigned");
+        }
+    }
+
+
+
+
     private void deleteStudent() {
-        // Create an AlertDialog for confirmation
         new AlertDialog.Builder(this)
                 .setTitle("Delete Student")
                 .setMessage("Are you sure you want to delete this student?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    // Proceed with deletion if user confirms
                     studentRef.removeValue().addOnSuccessListener(aVoid -> {
                         Toast.makeText(StudentDetailsActivity.this, "Student deleted successfully", Toast.LENGTH_SHORT).show();
-                        finish(); // Close activity after deletion
+                        finish();
                     }).addOnFailureListener(e ->
                             Toast.makeText(StudentDetailsActivity.this, "Failed to delete student", Toast.LENGTH_SHORT).show());
                 })
-                .setNegativeButton("No", (dialog, which) -> {
-                    // Dismiss the dialog if the user cancels
-                    dialog.dismiss();
-                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                 .show();
     }
 }
