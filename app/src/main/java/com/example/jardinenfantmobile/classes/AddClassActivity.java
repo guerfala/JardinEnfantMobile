@@ -18,7 +18,7 @@ public class AddClassActivity extends AppCompatActivity {
 
     private EditText editTextClassName, editTextClassDescription;
     private Button buttonAddClass;
-    private DatabaseReference databaseReference;
+    private DatabaseReference classRef;
     private FirebaseAuth auth;
 
     @Override
@@ -41,7 +41,7 @@ public class AddClassActivity extends AppCompatActivity {
         buttonAddClass = findViewById(R.id.buttonAddClass);
 
         // Initialiser la référence Firebase pour la base de données des classes
-        databaseReference = FirebaseDatabase.getInstance().getReference("classes");
+        classRef = FirebaseDatabase.getInstance().getReference("classes");
 
         // Ajouter un écouteur pour le bouton
         buttonAddClass.setOnClickListener(new View.OnClickListener() {
@@ -52,10 +52,10 @@ public class AddClassActivity extends AppCompatActivity {
 
                 if (!name.isEmpty() && !description.isEmpty()) {
                     // Enregistrer la nouvelle classe dans Firebase
-                    String id = databaseReference.push().getKey(); // Générer un ID unique pour chaque classe
+                    String id = classRef.push().getKey(); // Générer un ID unique pour chaque classe
                     ClassModel newClass = new ClassModel(id, name, description);
 
-                    databaseReference.child(id).setValue(newClass)
+                    classRef.child(id).setValue(newClass)
                             .addOnSuccessListener(aVoid -> {
                                 Toast.makeText(AddClassActivity.this, "Classe ajoutée avec succès", Toast.LENGTH_SHORT).show();
                                 finish(); // Fermer l'activité après l'ajout

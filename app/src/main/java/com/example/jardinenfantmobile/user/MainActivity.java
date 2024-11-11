@@ -1,17 +1,17 @@
-package com.example.jardinenfantmobile;
-
-import static androidx.core.content.ContextCompat.startActivity;
+package com.example.jardinenfantmobile.user;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.jardinenfantmobile.R;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,5 +42,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        FirebaseApp.initializeApp(this);
+
+        // Set up Firebase App Check with Play Integrity
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+        firebaseAppCheck.installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance());
     }
 }

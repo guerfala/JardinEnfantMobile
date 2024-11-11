@@ -11,8 +11,8 @@ public class Student {
     private List<String> products; // Assuming products are a list of strings (e.g., product IDs)
     private String image; // Path to image in Firebase Storage or URL
     private String comments;
-    private String courseId;  // Foreign key reference to Course
-    private String parentId;  // Foreign key reference to Parent
+    private String classId;  // Foreign key reference to Course
+    private String parent_id;  // Foreign key reference to Parent
 
     // No-argument constructor for Firebase
     public Student() {}
@@ -64,8 +64,8 @@ public class Student {
                 ", products=" + products +
                 ", image='" + image + '\'' +
                 ", comments='" + comments + '\'' +
-                ", courseId='" + courseId + '\'' +
-                ", parentId='" + parentId + '\'' +
+                ", classId='" + classId + '\'' +
+                ", parent_id='" + parent_id + '\'' +
                 '}';
     }
 
@@ -97,24 +97,24 @@ public class Student {
         this.comments = comments;
     }
 
-    public String getCourseId() {
-        return courseId;
+    public String getclassId() {
+        return classId;
     }
 
-    public void setCourseId(String courseId) {
-        this.courseId = courseId;
+    public void setclassId(String classId) {
+        this.classId = classId;
     }
 
-    public String getParentId() {
-        return parentId;
+    public String getparent_id() {
+        return parent_id;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setparent_id(String parent_id) {
+        this.parent_id = parent_id;
     }
 
     // Constructor with arguments
-    public Student(String firstName, String lastName, String birthDate, String gender, List<String> products, String image, String comments, String courseId, String parentId) {
+    public Student(String firstName, String lastName, String birthDate, String gender, List<String> products, String image, String comments, String classId, String parent_id) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -122,8 +122,8 @@ public class Student {
         this.products = products;
         this.image = image;
         this.comments = comments;
-        this.courseId = courseId;
-        this.parentId = parentId;
+        this.classId = classId;
+        this.parent_id = parent_id;
     }
 
 

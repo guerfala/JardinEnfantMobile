@@ -3,24 +3,24 @@ package com.example.jardinenfantmobile.Student;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.jardinenfantmobile.R;
-import com.example.jardinenfantmobile.UserProfileActivity;
+import com.example.jardinenfantmobile.user.UserProfileActivity;
 import com.example.jardinenfantmobile.classes.ClassListActivity;
 import com.example.jardinenfantmobile.events.AdminEventsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 
 public class StudentsListActivity extends AppCompatActivity {
@@ -28,22 +28,34 @@ public class StudentsListActivity extends AppCompatActivity {
     private StudentsAdapter studentsAdapter;
     private ArrayList<Student> studentsList;
     private DatabaseReference studentsRef;
+    private FloatingActionButton addStudentButton;
+    private String userRole;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_students);
 
+        // Retrieve the role and user ID passed from LoginActivity
+        userRole = getIntent().getStringExtra("role");
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Initialize addStudentButton (visible for both roles)
+        addStudentButton = findViewById(R.id.addStudentButton);
+        addStudentButton.setOnClickListener(v -> {
+            Intent intent = new Intent(StudentsListActivity.this, CreateStudentActivity.class);
+            startActivity(intent);
+        });
+
         // Initialize BottomNavigationView for navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.navigation_home) {
-                // Handle home navigation
                 startActivity(new Intent(StudentsListActivity.this, UserProfileActivity.class));
                 return true;
             } else if (id == R.id.navigation_events) {
-                // Handle events navigation
                 startActivity(new Intent(StudentsListActivity.this, AdminEventsActivity.class));
                 return true;
             } else if (id == R.id.navigation_students) {
@@ -88,19 +100,34 @@ public class StudentsListActivity extends AppCompatActivity {
         // Set up Firebase reference
         studentsRef = FirebaseDatabase.getInstance().getReference("students");
 
-        // Load existing students from Firebase Realtime Database
+        // Load students based on user role
+        loadStudentsBasedOnRole();
+    }
+
+    private void loadStudentsBasedOnRole() {
         studentsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 studentsList.clear();
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Student student = dataSnapshot.getValue(Student.class);
+
                     if (student != null) {
-                        studentsList.add(student);
+                        if ("client".equals(userRole) && student.getparent_id() != null && student.getparent_id().equals(userId)) {
+                            // Admin should see all students without filtering
+                            studentsList.add(student);
+                        } else  {
+                            // Client sees only their related students
+                            studentsList.add(student);
+                        }
                     }
                 }
                 studentsAdapter.updateFullList(new ArrayList<>(studentsList)); // Update the fullList in the adapter
                 studentsAdapter.notifyDataSetChanged();
+
+                // Log result to verify data loading based on role
+                Log.d("StudentsListActivity", "Loaded students: " + studentsList.size() + " for role: " + userRole);
             }
 
             @Override
@@ -109,4 +136,6 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

@@ -17,16 +17,46 @@ import com.example.jardinenfantmobile.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHolder> {
 
     private List<ClassModel> classList;
-    private Context context;
+    private List<ClassModel> fullList; // Full list for restoring data after filtering
+    private final Context context;
 
     public ClassAdapter(Context context, List<ClassModel> classList) {
         this.context = context;
         this.classList = classList;
+        this.fullList = new ArrayList<>(classList); // Initialize full list for filtering
+    }
+
+    // Method to update the full list
+    public void updateFullList(List<ClassModel> newFullList) {
+        this.fullList.clear();
+        this.fullList.addAll(newFullList);
+        this.classList = new ArrayList<>(newFullList); // Sync displayed list with full list
+        notifyDataSetChanged();
+    }
+
+    // Method for filtering class list based on a query
+    public void filter(String query) {
+        if (query.isEmpty()) {
+            classList.clear();
+            classList.addAll(fullList); // Restore full list if query is empty
+        } else {
+            List<ClassModel> filteredList = new ArrayList<>();
+            for (ClassModel classModel : fullList) {
+                if (classModel.getName().toLowerCase().contains(query.toLowerCase()) ||
+                        classModel.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                    filteredList.add(classModel);
+                }
+            }
+            classList.clear();
+            classList.addAll(filteredList);
+        }
+        notifyDataSetChanged(); // Refresh the adapter
     }
 
     @NonNull
@@ -42,13 +72,12 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
         holder.textViewName.setText(classModel.getName());
         holder.textViewDescription.setText(classModel.getDescription());
 
-        // Icône de suppression avec message de confirmation
+        // Set up delete icon with confirmation dialog
         holder.iconDelete.setOnClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setTitle("Confirmation")
                     .setMessage("Voulez-vous vraiment supprimer cette classe ?")
                     .setPositiveButton("Oui", (dialog, which) -> {
-                        // Supprimer la classe de Firebase
                         DatabaseReference classRef = FirebaseDatabase.getInstance()
                                 .getReference("classes")
                                 .child(classModel.getId());
@@ -57,7 +86,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
                                     Toast.makeText(context, "Classe supprimée avec succès", Toast.LENGTH_SHORT).show();
                                     classList.remove(position);
                                     notifyItemRemoved(position);
-                                    notifyDataSetChanged(); // Synchronise l'affichage
+                                    updateFullList(classList); // Sync full list with removed item
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(context, "Erreur : " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -67,17 +96,13 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
                     .show();
         });
 
-        // Icône de modification
+        // Set up edit icon with intent to EditClassActivity
         holder.iconEdit.setOnClickListener(v -> {
-            if (context instanceof android.app.Activity) {  // Vérifie si le contexte est une activité
-                Intent intent = new Intent(context, EditClassActivity.class);
-                intent.putExtra("classId", classModel.getId());
-                intent.putExtra("className", classModel.getName());
-                intent.putExtra("classDescription", classModel.getDescription());
-                context.startActivity(intent);
-            } else {
-                Toast.makeText(context, "Erreur : Impossible d'ouvrir l'activité de modification", Toast.LENGTH_SHORT).show();
-            }
+            Intent intent = new Intent(context, EditClassActivity.class);
+            intent.putExtra("classId", classModel.getId());
+            intent.putExtra("className", classModel.getName());
+            intent.putExtra("classDescription", classModel.getDescription());
+            context.startActivity(intent);
         });
     }
 

@@ -1,4 +1,4 @@
-package com.example.jardinenfantmobile;
+package com.example.jardinenfantmobile.user;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.jardinenfantmobile.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

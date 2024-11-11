@@ -2,8 +2,11 @@ package com.example.jardinenfantmobile.classes;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,8 +29,9 @@ public class ClassListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ClassAdapter classAdapter;
     private List<ClassModel> classList;
-    private DatabaseReference databaseReference;
+    private DatabaseReference classRef;
     private Button btnAddClass;
+    private EditText searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +41,13 @@ public class ClassListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView_classes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        searchBar = findViewById(R.id.searchBar);
+
         classList = new ArrayList<>();
-        classAdapter = new ClassAdapter(this, classList); // Correction ici en ajoutant le contexte `this`
+        classAdapter = new ClassAdapter(this, classList);
         recyclerView.setAdapter(classAdapter);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("classes");
+        classRef = FirebaseDatabase.getInstance().getReference("classes");
 
         btnAddClass = findViewById(R.id.btnAddClass);
         btnAddClass.setOnClickListener(new View.OnClickListener() {
@@ -51,20 +57,36 @@ public class ClassListActivity extends AppCompatActivity {
             }
         });
 
-        // Charger et écouter les données Firebase en temps réel
         loadDataFromFirebase();
+
+        // Ajouter le TextWatcher à la barre de recherche
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                classAdapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     private void loadDataFromFirebase() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        classRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 classList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ClassModel classModel = snapshot.getValue(ClassModel.class);
-                    classList.add(classModel);
+                    if (classModel != null) {
+                        classList.add(classModel);
+                    }
                 }
-                classAdapter.notifyDataSetChanged(); // Actualiser l'affichage
+                classAdapter.updateFullList(new ArrayList<>(classList)); // Sync fullList in adapter
+                classAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -73,4 +95,5 @@ public class ClassListActivity extends AppCompatActivity {
             }
         });
     }
+
 }

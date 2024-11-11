@@ -38,7 +38,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
         this.fullList.clear();
         this.fullList.addAll(newFullList);
     }
-
+    
     // Method to filter the student list based on a query
     public void filter(String query) {
         if (query.isEmpty()) {
@@ -47,8 +47,8 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
         } else {
             ArrayList<Student> filteredList = new ArrayList<>();
             for (Student student : fullList) {
-                if (student.getFirstName().toLowerCase().contains(query.toLowerCase()) ||
-                        student.getLastName().toLowerCase().contains(query.toLowerCase())) {
+                String fullName = (student.getFirstName() + " " + student.getLastName()).toLowerCase();
+                if (fullName.contains(query.toLowerCase())) {
                     filteredList.add(student);
                 }
             }
@@ -57,6 +57,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
         }
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -72,7 +73,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
         // Bind student attributes to the views
         holder.studentName.setText(student.getFirstName() + " " + student.getLastName());
         holder.studentBirthDate.setText(student.getBirthDate());
-        holder.studentGender.setText(student.getGender());
+//        holder.studentGender.setText(student.getGender());
 
         // Load student image with Glide, using a default image if the URL is null
         if (student.getImage() != null) {
@@ -93,14 +94,14 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
     // ViewHolder class to hold references to each item's views
     static class StudentViewHolder extends RecyclerView.ViewHolder {
         ImageView studentImageView;
-        TextView studentName, studentBirthDate, studentGender;
+        TextView studentName, studentBirthDate;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
             studentImageView = itemView.findViewById(R.id.studentImageView);
             studentName = itemView.findViewById(R.id.studentName);
             studentBirthDate = itemView.findViewById(R.id.studentBirthDate);
-            studentGender = itemView.findViewById(R.id.studentGender);
+//            studentGender = itemView.findViewById(R.id.studentGender);
         }
     }
 }
