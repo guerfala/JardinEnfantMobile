@@ -19,12 +19,12 @@
 <!--        android:layout_margin="8dp"-->
 <!--        android:text="Apply Filter" />-->
 
-<!--    <Spinner-->
-<!--        android:id="@+id/genderFilterSpinner"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="8dp"-->
-<!--        android:prompt="@string/gender_filter_prompt" />-->
+    <Spinner
+        android:id="@+id/genderFilterSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:prompt="@string/gender_filter_prompt" />
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"

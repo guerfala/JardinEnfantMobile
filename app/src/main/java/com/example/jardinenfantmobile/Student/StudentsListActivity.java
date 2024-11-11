@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -27,10 +31,12 @@ public class StudentsListActivity extends AppCompatActivity {
     private RecyclerView studentsRecyclerView;
     private StudentsAdapter studentsAdapter;
     private ArrayList<Student> studentsList;
+    private ArrayList<Student> filteredList; // List for gender-based filtering
     private DatabaseReference studentsRef, usersRef;
     private FloatingActionButton addStudentButton;
     private String userRole;
     private String userId;
+    private Spinner genderFilterSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,7 @@ public class StudentsListActivity extends AppCompatActivity {
 
         setupBottomNavigation();
         setupRecyclerView();
+        setupGenderFilter(); // Initialize gender filter
         fetchUserRoleAndLoadStudents();
     }
 
@@ -71,11 +78,51 @@ public class StudentsListActivity extends AppCompatActivity {
         });
     }
 
+    private void setupGenderFilter() {
+        genderFilterSpinner = findViewById(R.id.genderFilterSpinner);
+
+        // Set up the adapter with predefined gender options
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.gender_filter_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        genderFilterSpinner.setAdapter(adapter);
+
+        genderFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedGender = genderFilterSpinner.getSelectedItem().toString();
+                filterByGender(selectedGender);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                filterByGender("All"); // Default to show all if nothing is selected
+            }
+        });
+    }
+
+
+    private void filterByGender(String gender) {
+        filteredList.clear();
+
+        for (Student student : studentsList) {
+            // Check for null in gender to avoid NullPointerException
+            String studentGender = student.getGender() != null ? student.getGender() : "";
+            if (gender.equals("All") || studentGender.equalsIgnoreCase(gender)) {
+                filteredList.add(student);
+            }
+        }
+
+        studentsAdapter.updateFullList(filteredList);
+        studentsAdapter.notifyDataSetChanged();
+    }
+
     private void setupRecyclerView() {
         studentsRecyclerView = findViewById(R.id.studentsRecyclerView);
         studentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         studentsList = new ArrayList<>();
-        studentsAdapter = new StudentsAdapter(studentsList, student -> {
+        filteredList = new ArrayList<>();
+        studentsAdapter = new StudentsAdapter(filteredList, student -> {
             Intent intent = new Intent(StudentsListActivity.this, StudentDetailsActivity.class);
             intent.putExtra("studentId", student.getId());
             startActivity(intent);
@@ -125,15 +172,22 @@ public class StudentsListActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Student student = dataSnapshot.getValue(Student.class);
                     if (student != null) {
+                        // Check if parent_id is null to avoid NullPointerException
+                        String parentId = student.getparent_id();
+                        String gender = student.getGender();
+
+                        // Admin sees all students; client sees only their related students
                         if ("admin".equals(userRole) ||
-                                ("client".equals(userRole) && student.getparent_id() != null && student.getparent_id().equals(userId))) {
+                                ("client".equals(userRole) && parentId != null && parentId.equals(userId))) {
+
+                            // Safely add student to the list, assuming 'gender' can be null too
                             studentsList.add(student);
                         }
                     }
                 }
-                studentsAdapter.updateFullList(new ArrayList<>(studentsList));
-                studentsAdapter.notifyDataSetChanged();
-                Log.d("StudentsListActivity", "Loaded students: " + studentsList.size() + " for role: " + userRole);
+                // Call filter function with selected item from the spinner
+                filterByGender(genderFilterSpinner.getSelectedItem() != null ?
+                        genderFilterSpinner.getSelectedItem().toString() : "All");
             }
 
             @Override
@@ -142,4 +196,5 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
+
 }
