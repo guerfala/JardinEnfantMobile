@@ -11,4 +11,5 @@
     <color name="red">#FF0000</color>
     <color name="lime">#00FF00</color>
     <color name="dark_green">#006400</color>
+    <color name="search_background_color">#D5D1D1</color>
 </resources>
