@@ -40,10 +40,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Map;
-import com.github.PhilJay.MPAndroidChart;
 
 public class StudentsListActivity extends AppCompatActivity {
-    private Button generatePdfButton;
+    private Button generatePdfButton, showStatisticsButton;
     private RecyclerView studentsRecyclerView;
     private StudentsAdapter studentsAdapter;
     private ArrayList<Student> studentsList;
@@ -69,6 +68,12 @@ public class StudentsListActivity extends AppCompatActivity {
 
         generatePdfButton = findViewById(R.id.generatePdfButton);
         generatePdfButton.setOnClickListener(v -> generatePDF(studentsList));
+
+        showStatisticsButton = findViewById(R.id.showStatisticsButton);
+        showStatisticsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(StudentsListActivity.this, StudentsStatisticsActivity.class);
+            startActivity(intent);
+        });
 
         addStudentButton = findViewById(R.id.addStudentButton);
         addStudentButton.setOnClickListener(v -> {
@@ -106,7 +111,6 @@ public class StudentsListActivity extends AppCompatActivity {
     private void setupGenderFilter() {
         genderFilterSpinner = findViewById(R.id.genderFilterSpinner);
 
-        // Set up the adapter with predefined gender options
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.gender_filter_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -135,14 +139,13 @@ public class StudentsListActivity extends AppCompatActivity {
     private void setupClassFilter() {
         classFilterSpinner = findViewById(R.id.classFilterSpinner);
 
-        // Fetch class names and IDs from Firebase
         classesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 classNames.clear();
                 classIds.clear();
-                classNames.add("All"); // Add "All" option to show all students
-                classIds.add("All"); // Corresponding ID for "All" option
+                classNames.add("All");
+                classIds.add("All");
                 for (DataSnapshot classSnapshot : snapshot.getChildren()) {
                     String classId = classSnapshot.getKey();
                     String className = classSnapshot.child("name").getValue(String.class);
@@ -153,7 +156,6 @@ public class StudentsListActivity extends AppCompatActivity {
                     }
                 }
 
-                // Set up the adapter with class options
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(StudentsListActivity.this,
                         android.R.layout.simple_spinner_item, classNames);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -169,7 +171,7 @@ public class StudentsListActivity extends AppCompatActivity {
         classFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedClassId = classIds.get(position); // Use the class ID directly
+                String selectedClassId = classIds.get(position);
                 filterByClassAndGender(selectedClassId, genderFilterSpinner.getSelectedItem() != null
                         ? genderFilterSpinner.getSelectedItem().toString()
                         : "All");
@@ -188,25 +190,20 @@ public class StudentsListActivity extends AppCompatActivity {
         filteredList.clear();
 
         for (Student student : studentsList) {
-            // Retrieve and handle potential null values for gender and classId
             String studentGender = student.getGender() != null ? student.getGender() : "";
             String studentClassId = student.getclassId() != null ? student.getclassId() : "";
 
-            // Apply both filters cumulatively
             boolean matchesGender = gender.equals("All") || studentGender.equalsIgnoreCase(gender);
             boolean matchesClass = classId.equals("All") || studentClassId.equals(classId);
 
-            // Only add the student if it matches both filters
             if (matchesGender && matchesClass) {
                 filteredList.add(student);
             }
         }
 
-        // Update the adapter with the filtered list
         studentsAdapter.updateFullList(filteredList);
         studentsAdapter.notifyDataSetChanged();
     }
-
 
     private void setupRecyclerView() {
         studentsRecyclerView = findViewById(R.id.studentsRecyclerView);
@@ -242,11 +239,12 @@ public class StudentsListActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userRole = snapshot.getValue(String.class);
                 if (userRole != null) {
-                    // Show the Generate PDF button only for admin users
                     if ("admin".equals(userRole)) {
                         generatePdfButton.setVisibility(View.VISIBLE);
+                        showStatisticsButton.setVisibility(View.VISIBLE);
                     } else {
                         generatePdfButton.setVisibility(View.GONE);
+                        showStatisticsButton.setVisibility(View.GONE);
                     }
                     loadStudentsBasedOnRole();
                 } else {
@@ -260,7 +258,6 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void loadStudentsBasedOnRole() {
         studentsRef.addValueEventListener(new ValueEventListener() {
@@ -276,7 +273,6 @@ public class StudentsListActivity extends AppCompatActivity {
                         }
                     }
                 }
-                // Apply the combined filter after loading the students
                 filterByClassAndGender(
                         classFilterSpinner.getSelectedItem() != null ? classFilterSpinner.getSelectedItem().toString() : "All",
                         genderFilterSpinner.getSelectedItem() != null ? genderFilterSpinner.getSelectedItem().toString() : "All"
@@ -331,18 +327,15 @@ public class StudentsListActivity extends AppCompatActivity {
         yPosition += 40;
 
         for (Student student : studentsList) {
-            // Draw a rectangle around each student’s details for separation
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawRect(10, yPosition - 20, 380, yPosition + 100, paint);
             paint.setStyle(Paint.Style.FILL);
 
-            // Display student information
             canvas.drawText("Name: " + student.getFirstName() + " " + student.getLastName(), 20, yPosition, paint);
             yPosition += 25;
 
             String ageOrBirthDate = "Birth Date: " + student.getBirthDate();
             String gender = "Gender: " + student.getGender();
-
             String className = "Class: " + (classIdToNameMap.containsKey(student.getclassId())
                     ? classIdToNameMap.get(student.getclassId()) : "Unknown");
             String parentId = "Parent ID: " + (student.getparent_id() != null ? student.getparent_id() : "N/A");
@@ -356,13 +349,12 @@ public class StudentsListActivity extends AppCompatActivity {
             canvas.drawText(parentId, 20, yPosition, paint);
             yPosition += 35;
 
-            // Add separator line for better readability
-            paint.setColor(0xFFCCCCCC);  // Light gray
+            paint.setColor(0xFFCCCCCC);
             canvas.drawLine(10, yPosition, 380, yPosition, paint);
-            paint.setColor(0xFF000000);  // Reset to black
+            paint.setColor(0xFF000000);
             yPosition += 15;
 
-            if (yPosition > 750) {  // Start a new page if approaching page end
+            if (yPosition > 750) {
                 pdfDocument.finishPage(page);
                 page = pdfDocument.startPage(pageInfo);
                 canvas = page.getCanvas();
@@ -383,6 +375,4 @@ public class StudentsListActivity extends AppCompatActivity {
 
         pdfDocument.close();
     }
-
-
 }

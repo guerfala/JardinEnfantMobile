@@ -52,6 +52,14 @@
         android:contentDescription="Add Student"
         app:srcCompat="@drawable/add" />
 
+    <Button
+        android:id="@+id/showStatisticsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Statistics"
+        android:layout_marginTop="16dp"/>
+
+
     <!-- Bottom Navigation View for menu navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

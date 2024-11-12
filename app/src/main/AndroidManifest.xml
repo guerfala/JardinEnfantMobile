@@ -54,6 +54,8 @@
         <activity
             android:name=".Student.UpdateStudentActivity"
             android:exported="true"/>
+        <activity android:name=".Student.StudentsStatisticsActivity"
+            android:exported="true"/>
         <activity
             android:name=".classes.ClassListActivity"
             android:exported="true"/>
