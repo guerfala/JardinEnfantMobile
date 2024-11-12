@@ -11,6 +11,8 @@
     </string-array>
     <string name="class_filter_prompt">Select a Class</string>
     <string name="gender_filter_prompt">Select a Gender</string>
+    <string name="age_format">Age: %d</string>
+
 
 </resources>
 

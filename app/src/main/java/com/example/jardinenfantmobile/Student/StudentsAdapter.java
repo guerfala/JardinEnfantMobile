@@ -13,7 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.jardinenfantmobile.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.StudentViewHolder> {
 
@@ -71,10 +76,26 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
     public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
         Student student = studentsList.get(position);
 
-        // Bind student attributes to the views
+        // Bind student name to the view
         holder.studentName.setText(student.getFirstName() + " " + student.getLastName());
-        holder.studentBirthDate.setText(student.getBirthDate());
-//        holder.studentGender.setText(student.getGender());
+
+        // Calculate and display the age instead of birthdate
+        String birthDateString = student.getBirthDate();
+        if (birthDateString != null) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                Date birthDate = dateFormat.parse(birthDateString);
+                if (birthDate != null) {
+                    int age = calculateAge(birthDate);
+                    holder.studentBirthDate.setText(context.getString(R.string.age_format, age)); // Assuming you have a string resource for age like "Age: %d"
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                holder.studentBirthDate.setText("Unknown Age"); // Fallback text if parsing fails
+            }
+        } else {
+            holder.studentBirthDate.setText("Unknown Age");
+        }
 
         // Load student image with Glide, using a default image if the URL is null
         if (student.getImage() != null) {
@@ -85,6 +106,21 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
 
         // Set up click listener for each student item
         holder.itemView.setOnClickListener(v -> listener.onStudentClick(student));
+    }
+
+    // Helper method to calculate age
+    private int calculateAge(Date birthDate) {
+        Calendar birthCalendar = Calendar.getInstance();
+        birthCalendar.setTime(birthDate);
+
+        Calendar today = Calendar.getInstance();
+        int age = today.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR);
+
+        if (today.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
+            age--; // Adjust age if the birthday hasn't occurred yet this year
+        }
+
+        return age;
     }
 
     @Override

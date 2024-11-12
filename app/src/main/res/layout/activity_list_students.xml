@@ -11,20 +11,22 @@
         android:layout_margin="8dp"
         android:prompt="@string/class_filter_prompt" />
 
-<!--    <Button-->
-<!--        android:id="@+id/applyFilterButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        android:layout_margin="8dp"-->
-<!--        android:text="Apply Filter" />-->
-
     <Spinner
         android:id="@+id/genderFilterSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:prompt="@string/gender_filter_prompt" />
+
+    <Button
+        android:id="@+id/generatePdfButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate PDF"
+        android:layout_margin="16dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone" />
+
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"

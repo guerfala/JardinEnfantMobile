@@ -1,11 +1,14 @@
 package com.example.jardinenfantmobile.Student;
 
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -13,6 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.pdf.PdfDocument;
+import android.os.Environment;
+import android.widget.Toast;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 import com.example.jardinenfantmobile.R;
 import com.example.jardinenfantmobile.user.UserProfileActivity;
@@ -28,8 +39,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Map;
+import com.github.PhilJay.MPAndroidChart;
 
 public class StudentsListActivity extends AppCompatActivity {
+    private Button generatePdfButton;
     private RecyclerView studentsRecyclerView;
     private StudentsAdapter studentsAdapter;
     private ArrayList<Student> studentsList;
@@ -41,6 +55,7 @@ public class StudentsListActivity extends AppCompatActivity {
     private Spinner genderFilterSpinner, classFilterSpinner;
     private ArrayList<String> classNames = new ArrayList<>();
     private ArrayList<String> classIds = new ArrayList<>(); // To store class IDs for filtering
+    private Map<String, String> classIdToNameMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +66,9 @@ public class StudentsListActivity extends AppCompatActivity {
         usersRef = FirebaseDatabase.getInstance().getReference("Registered Users");
         studentsRef = FirebaseDatabase.getInstance().getReference("students");
         classesRef = FirebaseDatabase.getInstance().getReference("classes");
+
+        generatePdfButton = findViewById(R.id.generatePdfButton);
+        generatePdfButton.setOnClickListener(v -> generatePDF(studentsList));
 
         addStudentButton = findViewById(R.id.addStudentButton);
         addStudentButton.setOnClickListener(v -> {
@@ -63,6 +81,7 @@ public class StudentsListActivity extends AppCompatActivity {
         setupGenderFilter(); // Initialize gender filter
         setupClassFilter(); // Initialize class filter
         fetchUserRoleAndLoadStudents();
+        loadClassNames();
     }
 
     private void setupBottomNavigation() {
@@ -223,6 +242,12 @@ public class StudentsListActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userRole = snapshot.getValue(String.class);
                 if (userRole != null) {
+                    // Show the Generate PDF button only for admin users
+                    if ("admin".equals(userRole)) {
+                        generatePdfButton.setVisibility(View.VISIBLE);
+                    } else {
+                        generatePdfButton.setVisibility(View.GONE);
+                    }
                     loadStudentsBasedOnRole();
                 } else {
                     Log.e("StudentsListActivity", "User role not found");
@@ -235,6 +260,7 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void loadStudentsBasedOnRole() {
         studentsRef.addValueEventListener(new ValueEventListener() {
@@ -263,4 +289,100 @@ public class StudentsListActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void loadClassNames() {
+        classesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                classIdToNameMap.clear();
+                for (DataSnapshot classSnapshot : snapshot.getChildren()) {
+                    String classId = classSnapshot.getKey();
+                    String className = classSnapshot.child("name").getValue(String.class);
+                    if (classId != null && className != null) {
+                        classIdToNameMap.put(classId, className);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("StudentsListActivity", "Failed to load class names: " + error.getMessage());
+            }
+        });
+    }
+
+    public void generatePDF(List<Student> studentsList) {
+        PdfDocument pdfDocument = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(400, 800, 1).create();
+        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+
+        Canvas canvas = page.getCanvas();
+        Paint paint = new Paint();
+        paint.setTextSize(14);
+
+        int yPosition = 40;
+
+        // Title
+        paint.setTextSize(20);
+        paint.setFakeBoldText(true);
+        canvas.drawText("Student List", 130, yPosition, paint);
+        paint.setTextSize(14);
+        paint.setFakeBoldText(false);
+        yPosition += 40;
+
+        for (Student student : studentsList) {
+            // Draw a rectangle around each student’s details for separation
+            paint.setStyle(Paint.Style.STROKE);
+            canvas.drawRect(10, yPosition - 20, 380, yPosition + 100, paint);
+            paint.setStyle(Paint.Style.FILL);
+
+            // Display student information
+            canvas.drawText("Name: " + student.getFirstName() + " " + student.getLastName(), 20, yPosition, paint);
+            yPosition += 25;
+
+            String ageOrBirthDate = "Birth Date: " + student.getBirthDate();
+            String gender = "Gender: " + student.getGender();
+
+            String className = "Class: " + (classIdToNameMap.containsKey(student.getclassId())
+                    ? classIdToNameMap.get(student.getclassId()) : "Unknown");
+            String parentId = "Parent ID: " + (student.getparent_id() != null ? student.getparent_id() : "N/A");
+
+            canvas.drawText(ageOrBirthDate, 20, yPosition, paint);
+            yPosition += 25;
+            canvas.drawText(gender, 20, yPosition, paint);
+            yPosition += 25;
+            canvas.drawText(className, 20, yPosition, paint);
+            yPosition += 25;
+            canvas.drawText(parentId, 20, yPosition, paint);
+            yPosition += 35;
+
+            // Add separator line for better readability
+            paint.setColor(0xFFCCCCCC);  // Light gray
+            canvas.drawLine(10, yPosition, 380, yPosition, paint);
+            paint.setColor(0xFF000000);  // Reset to black
+            yPosition += 15;
+
+            if (yPosition > 750) {  // Start a new page if approaching page end
+                pdfDocument.finishPage(page);
+                page = pdfDocument.startPage(pageInfo);
+                canvas = page.getCanvas();
+                yPosition = 40;
+            }
+        }
+
+        pdfDocument.finishPage(page);
+
+        File filePath = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "StudentList.pdf");
+        try {
+            pdfDocument.writeTo(new FileOutputStream(filePath));
+            Toast.makeText(this, "PDF generated at: " + filePath.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error creating PDF", Toast.LENGTH_SHORT).show();
+        }
+
+        pdfDocument.close();
+    }
+
+
 }
