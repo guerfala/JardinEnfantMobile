@@ -364,7 +364,7 @@ public class StudentsListActivity extends AppCompatActivity {
 
         pdfDocument.finishPage(page);
 
-        File filePath = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "StudentList.pdf");
+        File filePath = new File(getFilesDir(), "StudentList.pdf");
         try {
             pdfDocument.writeTo(new FileOutputStream(filePath));
             Toast.makeText(this, "PDF generated at: " + filePath.getAbsolutePath(), Toast.LENGTH_LONG).show();

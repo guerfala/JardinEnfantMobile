@@ -1,5 +1,6 @@
 package com.example.jardinenfantmobile.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jardinenfantmobile.R;
+import com.example.jardinenfantmobile.events.AdminEventsActivity;
+import com.example.jardinenfantmobile.events.ClientEventsActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +38,21 @@ public class AdminActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+                    int id = item.getItemId();
+                    if (id == R.id.navigation_home) {
+                        // Handle home navigation
+                        startActivity(new Intent(AdminActivity.this, AdminActivity.class));
+                        return true;
+                    } else if (id == R.id.navigation_events) {
+                        // Handle events navigation
+                        startActivity(new Intent(AdminActivity.this, AdminEventsActivity.class));
+                        return true;
+                    }
+            return false;
+        });
 
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBar);
